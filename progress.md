@@ -5,7 +5,8 @@
 ## Current state (keep updated)
 - **Phase:** 1 — design v1 from literature. Requirements locked in `REQUIREMENTS.md` (2026-09-02).
 - **Last action:** Completed two literature surveys (`research/literature/output-formats-survey.md`, `research/literature/evaluation-survey.md`); presented revised Q2 output contract and Q3 evaluation recommendation to user.
-- **Next action:** User reviews `skill/DESIGN.md` (v1 design, entry #27); then implement `skill/deep-research/`.
+- **Next action:** User is reviewing `skill/DESIGN.md` (v1 design, entry #27) offline and will bring thoughts to the next session. Discuss, revise DESIGN.md if needed, then implement `skill/deep-research/` (SKILL.md, prompts/, scripts/fetch.py, ledger.py, cite_check.py, runmeta.py).
+- **Session log:** session 1 ended 2026-09-02 after entry #27. All work committed and pushed (HEAD 845d74e).
 - **Open questions:** none blocking; see Phase 1 plan in entry #25.
 
 ---
@@ -234,3 +235,6 @@ Core skill assumes only generic search + fetch, plus `curl` and Python stdlib. S
 
 ## 2026-09-02 #27 — v1 design document drafted (`skill/DESIGN.md`)
 Written from REQUIREMENTS.md + the four surveys. Every phase and parameter carries an evidence tag (R# from architecture-survey.md, or the other surveys). Key departures from the built-in: fetch budget >= verification budget; verification default is `unverified`, not `refuted`, and seeks corroboration; second evidence-seeded decomposition round with saturation stop; no claim cap before verification; model-free quote-containment + URL-health pass; compact working state in files. **Status:** awaiting user review before implementation.
+
+## 2026-09-02 #28 — Session 1 closed
+User paused to read `skill/DESIGN.md` and return with feedback. Points flagged for their attention: verification default (`unverified` vs built-in `refuted`) and budget allocation (fetch pool >= verifier pool). Nothing else pending. Repo clean and pushed.
