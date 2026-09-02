@@ -5,7 +5,7 @@
 ## Current state (keep updated)
 - **Phase:** 1 — design v1 from literature. Requirements locked in `REQUIREMENTS.md` (2026-09-02).
 - **Last action:** Completed two literature surveys (`research/literature/output-formats-survey.md`, `research/literature/evaluation-survey.md`); presented revised Q2 output contract and Q3 evaluation recommendation to user.
-- **Next action:** Phase 1 step 1: architecture survey (how deep-research systems plan, search, orchestrate agents, verify; what evidence says works) -> `research/literature/architecture-survey.md`. Then draft the v1 workflow design doc, then implement `skill/`.
+- **Next action:** User reviews `skill/DESIGN.md` (v1 design, entry #27); then implement `skill/deep-research/`.
 - **Open questions:** none blocking; see Phase 1 plan in entry #25.
 
 ---
@@ -217,3 +217,20 @@ Core skill assumes only generic search + fetch, plus `curl` and Python stdlib. S
 3. Implement `skill/deep-research/` (SKILL.md + scripts: fetch chain, source ledger, claims/verification, URL health) and Claude Code adapter.
 4. Smoke-test on 2-3 questions; iterate.
 5. Phase 2: pilot evaluation per Q3/Q4.
+
+## 2026-09-02 #26 — Architecture survey completed (`research/literature/architecture-survey.md`, 645 lines, 53 sources; Opus agent)
+**Key findings:**
+- **Recall bottleneck confirmed by four independent teams:** DRB-II recall 23-40% vs presentation 75-92%; TaxoBench best agent retrieves 21% of expert-cited papers; LiveResearchBench "deep searchers, not deep researchers"; PING taxonomy: the largest hallucination class is *noise-induced* (evidence retrieved but unused, 0.24-0.48) vs fabrication (0.10-0.15).
+- **Strongest transferable result:** IterResearch's *workspace reconstruction* (rebuild a compact state each round: question, evolving findings, last observation) works as a pure prompting strategy: o3 34.1->46.8%, DeepSeek-V3.1 23.1->42.3% on BrowseComp vs ReAct; +12.6pp over a mono-context agent with a larger window. Reduces tokens.
+- **STORM ablation: iteration beats personas.** Removing the conversation loop costs entity recall 40.5->32.0; removing perspectives costs only 40.5->40.1. Generating angles once before evidence is STORM's losing arm.
+- **Multi-agent evidence weaker than the headline:** Anthropic's +90.2% sits beside "token usage explains 80% of variance" and 15x cost; LiveResearchBench has multi-agent behind single-agent on coverage (66.8 vs 76.3) and credits multi-agent's citation win to explicit citation-alignment steps; single-agent matches multi-agent at matched token budgets (Tran & Kiela). LangChain abandoned parallel section-writing as "disjoint".
+- **Verification: corroboration beats refutation.** FineVerify decompose-and-check +8.2pp; DRIFT claim ledger +28pp F1; self-consistency beats debate at matched budget (88.2 vs 83.0); intrinsic self-correction degrades accuracy; adversarial advocates flip judges. Retrieval is the *lowest*-error stage (2.9%).
+- **Drafting:** interleaving drafting with retrieval helps (removing it: -18.5% WebThinker); revising without new evidence regresses. Rule: every revision pass must carry new retrieval.
+- **Higher reasoning effort is flat-to-negative** on Deep Research Bench for 3 of 4 frontier models; spend marginal tokens on reading more sources.
+- **Built-in `/deep-research` well-supported on:** quoted claims from fetched pages only; structured extraction as compression; independent voters; `unverified` vs `refuted`; refuted claims listed; state out of session context; dedup + confidence ranking.
+- **Built-in weaknesses (ranked):** (1) budget inverted: ~15 fetch agents vs ~75 verifier agents; (2) verifier instruction "Default to refuted=true if uncertain" optimises precision against recall; (3) angles generated once, cold; (4) no re-search loop; (5) no hypothesis conditioning; (6) no quote-containment check; (7) 25-claim cap discards up to 2/3 of extracted evidence; (8) fixed budgets, no saturation stop; (9) no explicit could-not-find contract.
+- **Caveat:** one PDF extraction produced fabricated numbers contradicted by the abstract; discarded. Surviving PDF-only figures marked unverified.
+**16 design recommendations R1-R16 in the file, tagged by evidence strength.** One-line version: spend budget on reading more full pages and extracting more quoted claims; keep a compact rewritten working state; decompose twice (cold, then evidence-seeded); verify by corroboration not refutation; write once from assembled evidence.
+
+## 2026-09-02 #27 — v1 design document drafted (`skill/DESIGN.md`)
+Written from REQUIREMENTS.md + the four surveys. Every phase and parameter carries an evidence tag (R# from architecture-survey.md, or the other surveys). Key departures from the built-in: fetch budget >= verification budget; verification default is `unverified`, not `refuted`, and seeks corroboration; second evidence-seeded decomposition round with saturation stop; no claim cap before verification; model-free quote-containment + URL-health pass; compact working state in files. **Status:** awaiting user review before implementation.
