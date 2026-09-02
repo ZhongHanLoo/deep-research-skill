@@ -11,6 +11,7 @@ We are designing, evidencing, and packaging the best possible **deep-research wo
 - 2026-09-02: **Tooling** = generic search + fetch, `curl` + Python stdlib only; keyless 9-step fetch fallback chain (see `research/literature/fetch-reliability-survey.md`); quotes only from raw text, never WebFetch summaries; no paywall/login/CAPTCHA circumvention.
 - 2026-09-02: **Budget** = no wall-clock limit; user chooses agent count (with a shown recommendation) and parallel vs sequential; both modes produce the same run folder.
 - 2026-09-02: **Autonomy** = clarify only if underspecified; one plan checkpoint (angles, agent count, parallel/sequential); then fully autonomous; skip flag for batch runs.
+- 2026-09-02: **GitHub** = `ZhongHanLoo/deep-research-skill`, public, MIT, standalone (no skill dependencies); baselines described not redistributed; eval questions/rubrics private.
 - 2026-09-02: **Harness** = Claude Code only (build + test). Portability to other harnesses is a design constraint (Agent Skills standard `SKILL.md`, harness-agnostic core), not a test target.
 
 ## Files that must stay current
@@ -24,7 +25,7 @@ We are designing, evidencing, and packaging the best possible **deep-research wo
 - Every claim in the literature review must carry a source (URL, paper, repo, commit) so a future round can re-verify it.
 - Keep the skill itself harness-agnostic: plain Markdown instructions plus optional scripts; harness-specific glue (Claude Code `SKILL.md` frontmatter, Hermes skill layout, Codex equivalents) lives in thin adapter directories, never inside the core workflow text.
 - Prefer evidence over opinion: when choosing between workflow designs, record what was compared, how, and the result.
-- Do not commit or push without being asked (repo is not yet a git repo; initialize only once the user confirms the GitHub plan).
+- Git: repo is `github.com/ZhongHanLoo/deep-research-skill` (public, MIT). Commit at natural milestones; push when the user asks or at the end of a work session. Never commit `research/prior-art/*` code copies or `eval/private/` (gitignored). Local commit identity: ZH <ZhongHanLoo@users.noreply.github.com>.
 
 ## Environment notes (observed 2026-09-02)
 - Claude Code plugins installed: superpowers 5.1.0, claude-mem 13.5.6, elements-of-style 1.0.0.

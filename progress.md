@@ -3,9 +3,9 @@
 > Purpose: single source of truth for where we are and how we got here. Survives context compaction and new sessions. Append new entries at the bottom; keep "Current state" at the top accurate.
 
 ## Current state (keep updated)
-- **Phase:** 0 — requirements gathering, going through gap questions one by one. Q1-Q8 decided. Next: Q9 GitHub.
+- **Phase:** 0 — requirements gathering, going through gap questions one by one. Q1-Q9 decided. Next: Q10 re-audit trigger, Q11 prior-art likes/dislikes, Q12 domain/language.
 - **Last action:** Completed two literature surveys (`research/literature/output-formats-survey.md`, `research/literature/evaluation-survey.md`); presented revised Q2 output contract and Q3 evaluation recommendation to user.
-- **Next action:** Q9 GitHub (repo name, public/private, license, dependencies on existing skills).
+- **Next action:** Q10 re-audit trigger; then Q11, Q12; then lock requirements and start Phase 1 (design v1 from literature).
 - **Open questions:** Q4-Q12 from entry #2.
 
 ---
@@ -200,3 +200,7 @@ Core skill assumes only generic search + fetch, plus `curl` and Python stdlib. S
 **User challenged:** why include the Claude Code and Hermes workflows in the repository at all?
 **Decision:** they are not included. The repo carries a `research/prior-art/README.md` describing each baseline (name, version, date, pipeline summary, link to source at pinned commit). Local copies in `research/prior-art/` remain gitignored working references only. Rationale: the re-audit only needs to know what the baselines were; copying code adds licensing risk (the Claude Code script is proprietary, extracted from the binary) and no value.
 **Still awaiting user:** repo name, git name/email for commits, confirmation of public + MIT.
+
+## 2026-09-02 #23 — Q9 decided and executed
+**Decision (user: "use my github account, do what you think is best"):** repo `ZhongHanLoo/deep-research-skill`, public, MIT, standalone. Commit identity set locally to `ZH <ZhongHanLoo@users.noreply.github.com>` (GitHub profile name; no-reply address so the user's personal email is not exposed).
+**Executed:** `git init` (branch main); `.gitignore` excludes `research/prior-art/*` except its README, and `eval/private/`; added LICENSE (MIT), README.md, `research/prior-art/README.md` (descriptions of the Claude Code built-in and Hermes grounded-citations baselines, no code); initial commit; GitHub repo created and pushed.
