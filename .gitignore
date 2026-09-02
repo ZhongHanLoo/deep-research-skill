@@ -1,0 +1,10 @@
+# Local-only working references (proprietary or third-party code; described in research/prior-art/README.md)
+research/prior-art/*
+!research/prior-art/README.md
+
+# Evaluation questions and rubrics stay private to avoid leakage
+eval/private/
+
+# OS / editor
+.DS_Store
+*.swp
