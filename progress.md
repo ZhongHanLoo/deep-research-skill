@@ -3,10 +3,10 @@
 > Purpose: single source of truth for where we are and how we got here. Survives context compaction and new sessions. Append new entries at the bottom; keep "Current state" at the top accurate.
 
 ## Current state (keep updated)
-- **Phase:** 0 — requirements gathering, going through gap questions one by one. Q1-Q9 decided. Next: Q10 re-audit trigger, Q11 prior-art likes/dislikes, Q12 domain/language.
+- **Phase:** 1 — design v1 from literature. Requirements locked in `REQUIREMENTS.md` (2026-09-02).
 - **Last action:** Completed two literature surveys (`research/literature/output-formats-survey.md`, `research/literature/evaluation-survey.md`); presented revised Q2 output contract and Q3 evaluation recommendation to user.
-- **Next action:** Q10 re-audit trigger; then Q11, Q12; then lock requirements and start Phase 1 (design v1 from literature).
-- **Open questions:** Q4-Q12 from entry #2.
+- **Next action:** Phase 1 step 1: architecture survey (how deep-research systems plan, search, orchestrate agents, verify; what evidence says works) -> `research/literature/architecture-survey.md`. Then draft the v1 workflow design doc, then implement `skill/`.
+- **Open questions:** none blocking; see Phase 1 plan in entry #25.
 
 ---
 
@@ -204,3 +204,16 @@ Core skill assumes only generic search + fetch, plus `curl` and Python stdlib. S
 ## 2026-09-02 #23 — Q9 decided and executed
 **Decision (user: "use my github account, do what you think is best"):** repo `ZhongHanLoo/deep-research-skill`, public, MIT, standalone. Commit identity set locally to `ZH <ZhongHanLoo@users.noreply.github.com>` (GitHub profile name; no-reply address so the user's personal email is not exposed).
 **Executed:** `git init` (branch main); `.gitignore` excludes `research/prior-art/*` except its README, and `eval/private/`; added LICENSE (MIT), README.md, `research/prior-art/README.md` (descriptions of the Claude Code built-in and Hermes grounded-citations baselines, no code); initial commit; GitHub repo created and pushed.
+
+## 2026-09-02 #24 — Q10 decided
+**Decision (user):** re-audit is **manual**, triggered by the user whenever they choose. No scheduled cadence or automated event triggers. What needs updating is determined during the re-audit itself. Design implication: the repo must make a re-audit easy to start cold — `progress.md`, the surveys with dated source lists, and the pilot evidence are the inputs; a short "How to run a re-audit" section in the README will point at them.
+
+## 2026-09-02 #25 — Q11, Q12 decided; requirements locked; Phase 0 closed
+**Decisions (user: "no preference on both, go with the defaults"):** Q11 no prior-art preferences, design from survey findings. Q12 general-purpose, English-first, pilot questions across five domains.
+**Requirements consolidated in `REQUIREMENTS.md`.**
+**Phase 1 plan (design v1 from literature):**
+1. Architecture survey (Opus agent): how existing systems and papers handle question decomposition, search strategy (breadth vs depth, iterative vs one-shot), multi-agent orchestration (lead/subagent, file handoff, context management), claim extraction and verification, synthesis; what published evidence/ablations say actually improves recall and citation quality. Output: `research/literature/architecture-survey.md`.
+2. v1 design document (`skill/DESIGN.md`): phases, agent roles, prompts outline, file contracts per Q2, fallback chain per Q6, controls per Q7/Q8, with each choice traced to survey evidence.
+3. Implement `skill/deep-research/` (SKILL.md + scripts: fetch chain, source ledger, claims/verification, URL health) and Claude Code adapter.
+4. Smoke-test on 2-3 questions; iterate.
+5. Phase 2: pilot evaluation per Q3/Q4.

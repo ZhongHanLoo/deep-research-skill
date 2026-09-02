@@ -3,6 +3,9 @@
 ## What this project is
 We are designing, evidencing, and packaging the best possible **deep-research workflow** for AI coding agents, delivered as a portable **skill** (e.g. `/deep-research`) that works across harnesses: Claude Code, Codex, Hermes, and others. The repo will also hold the literature review, evidence, benchmarks, and decision log so the workflow can be re-audited and updated in future rounds.
 
+## Requirements
+All twelve gap questions are locked in `REQUIREMENTS.md` (2026-09-02). Read it before designing or implementing anything.
+
 ## Scope decisions so far
 - 2026-09-02: **Web research only** for this round. No codebase or local-document research.
 - 2026-09-02: **Output contract** = one run folder: `report.md` (deliverable), `angles/*.md` (per-agent notes), `sources.md`, `00-brief.md`, `verification.md` + `claims.json`, `run.json`. Controls: depth preset (quick/standard/deep), mode (brief/report). Details in progress.md entry #11.
@@ -12,6 +15,7 @@ We are designing, evidencing, and packaging the best possible **deep-research wo
 - 2026-09-02: **Budget** = no wall-clock limit; user chooses agent count (with a shown recommendation) and parallel vs sequential; both modes produce the same run folder.
 - 2026-09-02: **Autonomy** = clarify only if underspecified; one plan checkpoint (angles, agent count, parallel/sequential); then fully autonomous; skip flag for batch runs.
 - 2026-09-02: **GitHub** = `ZhongHanLoo/deep-research-skill`, public, MIT, standalone (no skill dependencies); baselines described not redistributed; eval questions/rubrics private.
+- 2026-09-02: **Re-audit** = manual, user-triggered; no schedule. Repo must support a cold-start re-audit (dated sources, evidence, README how-to).
 - 2026-09-02: **Harness** = Claude Code only (build + test). Portability to other harnesses is a design constraint (Agent Skills standard `SKILL.md`, harness-agnostic core), not a test target.
 
 ## Files that must stay current
