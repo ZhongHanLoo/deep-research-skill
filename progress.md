@@ -4,8 +4,8 @@
 
 ## Current state (keep updated)
 - **Phase:** 1 — design v1 from literature. Requirements locked in `REQUIREMENTS.md` (2026-09-02).
-- **Last action (2026-09-03, session 2):** skill implemented (#30), smoke-tested (#31), three pre-pilot design changes adopted (#32), Phase 2 Stage A done: 15 private questions with 180 rubric items plus eval tooling (#33).
-- **Next action:** Phase 2, Stage B cost probe (entry #33): run the skill at `standard` on the five stable questions, record cost, judge once. Needs the user's go (quota). Then Stage C: full pilot incl. user-triggered built-in `/deep-research` runs, Opus judging, `eval/score.py`. User has not yet given feedback on `skill/DESIGN.md`; v1 proceeds as drafted (entry #29).
+- **Last action (2026-09-03, session 2):** Stage B cost probe: technology-3 and science-health-3 run end to end at `standard` depth, judged by Opus (0.88 and 0.96 weighted compliance), with six fixes made along the way (#34-#35). Per-agent token log and findings in `eval/private/results/2026-09-03-B/{tokens,findings}.{json,txt}`.
+- **Next action:** user decision in entry #35: (a) run the remaining three probe questions as-is, (b) apply the three fixes (mechanical central cap, writer self-check of length, adjacent-rule extraction) then run them, or (c) go to the comparison now. Recommended (b) then comparison on all five. User has not yet given feedback on `skill/DESIGN.md`; v1 proceeds as drafted (entry #29).
 - **Session log:** session 1 ended 2026-09-02 after entry #27 (HEAD 7222c8e). Session 2 started 2026-09-03.
 - **Open questions:** user feedback on DESIGN.md (verification default, budget split) still welcome; both are preset/prompt parameters.
 
@@ -323,3 +323,20 @@ Topics (one line each, no question text here): TLS certificate lifetime schedule
 4. The writer dropped verified facts the rubric wanted (2 of 3 failed items). `cite_check.py` now lists verified central claims never used in the report (23 of 85 for technology-3) so the writer can do a coverage pass; SKILL.md phase 7 updated.
 5. Writer overreach beyond the ledger is caught by tracing (2 cases) — the marker mechanism from #32 earned its keep on its first real run.
 **Cost verdict so far:** ~1.4-2.3M Sonnet tokens per question at `standard` depth, dominated by corroboration of an inflated central set. The full 15-question pilot at this setting would be ~25-35M tokens for workflow B alone, i.e. several sessions of quota. Decision for the user after science-health-3 finishes: (a) run the remaining three probe questions as-is, (b) first cap central claims mechanically (e.g. ≤8 per angle per round) and rerun the probe, or (c) go straight to the comparison on these two questions.
+
+## 2026-09-03 #35 — Stage B cost probe: two questions complete; results and decision needed
+**Results (workflow B, `standard`, Sonnet agents, Opus judge, rubrics written before the runs):**
+| Question | Sources | Claims (corrob./single/contra.) | Report words | Judge before → after passes | Weighted compliance | Generation tokens | Wall clock |
+|---|---|---|---|---|---|---|---|
+| technology-3 (HTTP caching) | 61 | 123 (69/53/1) | 1,798 | 9/12 → 10/12 after coverage pass | 0.77 → **0.88** | 1.50M (16 agents) | ~2 h incl. outage |
+| science-health-3 (vitamin D) | 103 (94 ok) | 126 (76/47/2) | 2,554 → 1,790 after trim | 11/12 → 11/12 after trim | **0.96** | 2.61M (22 agents) | ~2 h |
+Citation checks: 249/249 quotes verified; 0 unknown citations; all citations traced to claims after fix passes (2 + 6 writer overreaches caught and fixed); URL health 144 LIVE / 4 archived-only / 7 dead-now-but-fetched-live. Judging cost 50-60k Opus tokens per report.
+**What the remaining misses are:** technology-3 r8 (shared-cache `Authorization` rule) and r12 (RFC 9110 date) and science-health-3 r8 (USPSTF grade B for exercise) were never in the ledger — recall failures at the search/extraction stage, not writing failures. Everything the ledger held and the rubric wanted was recovered by the coverage pass.
+**Cost structure:** verification ≈ 50% of generation tokens (793k and 1.34M), driven by 85-91 claims marked central per run; research 420-730k; writing 290-530k (the fix/coverage/trim passes cost as much as the first draft; the trim pass alone 263k). Judge and researcher counts of words/tokens are unreliable; only script counts are trusted.
+**Fixes made during Stage B (all committed):** work-key mirror detection; Content-Encoding decode + binary gate; `refetch`; coverage list of unused verified central claims (raised technology-3 by +0.11); script-enforced length ceiling; importance-cap prompt text (ineffective, see below).
+**Open design problems with evidence:**
+1. Importance inflation is not fixable by prompt text (71/101 and 25/34 central despite instructions) → mechanical cap in `ledger.py` (e.g. at most 8 central claims per source-angle; extra central claims downgraded to supporting on write) — cheap, halves verification cost.
+2. Writers overshoot length by 20-70% and misreport counts → the length check now exists; the writer prompt should tell it to run `cite_check.py --no-network` before finishing so the trim happens in the first pass, not in a 263k-token second pass.
+3. Recall gaps are at the search stage: rubric items missed were all "adjacent facts" (a rule in a spec section the researcher extracted from, a companion recommendation on the same guideline page). A cheap mitigation: an extraction rule "for spec/guideline pages, extract every normative rule in the sections you cite, not only those matching the hypothesis"; measure in the next probe.
+4. Quota: ~4.1M generation tokens for two questions; the session limit was hit once. The full 15-question workflow-B pilot at this setting ≈ 25-35M tokens.
+**Decision for the user (one of):** (a) run the remaining three probe questions now, as-is, for cost/variance data; (b) apply fixes 1-3 first (about an hour), then run the remaining three; (c) stop the probe here and move to the comparison: user runs built-in `/deep-research` on these two questions, Opus judges both, `eval/score.py` reports. **Recommendation: (b) then (c) on all five** — the fixes address the two largest measured costs and the measured miss class, and the comparison is what REQ 4 asks for.
