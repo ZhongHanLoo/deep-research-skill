@@ -63,7 +63,9 @@ BLOCK_MARKERS = ("attention required! | cloudflare", "sorry, you have been block
                  "checking your browser", "anubis uses a proof-of-work scheme", "enable javascript and cookies",
                  "access denied", "request blocked", "just a moment...", "client challenge",
                  "a required part of this site couldn't load", "are you a robot", "verify you are human",
-                 "javascript is disabled in your browser", "please enable cookies")
+                 "javascript is disabled in your browser", "please enable cookies",
+                 "performing security verification", "verifies you are not a bot",
+                 "security service to protect against malicious bots", "checking if the site connection is secure")
 CONSENT_MARKERS = ("before you continue", "we use cookies and data", "manage your privacy settings", "accept all cookies")
 
 _last_archive_call = 0.0
@@ -651,7 +653,7 @@ def rung_jina(ctx: Ctx) -> dict | None:
     if "cached snapshot" in body[:2000].lower():
         strength = "archived"
         snapshot = now_iso()[:10]
-    g = gate(text)
+    g = gate(text, title=meta.get("title"))
     if g != "passed":
         ctx.attempt("jina-reader", f"{r.status} {g}")
         return None
@@ -667,12 +669,12 @@ def rung_urltomarkdown(ctx: Ctx) -> dict | None:
         ctx.attempt("urltomarkdown", r.describe())
         return None
     text = r.body.decode("utf-8", "replace").strip()
-    g = gate(text)
+    title = r.headers.get("x-title")
+    g = gate(text, title=unquote(title) if title else None)
     if g != "passed":
         ctx.attempt("urltomarkdown", f"{r.status} {g}")
         return None
     ctx.attempt("urltomarkdown", f"{r.status}")
-    title = r.headers.get("x-title")
     return make_result("urltomarkdown", text, http_status=r.status, content_type="text/markdown",
                        meta={"title": unquote(title) if title else None, "publisher": urlsplit(url).hostname}, final_url=url)
 
@@ -719,7 +721,7 @@ def rung_wayback(ctx: Ctx) -> dict | None:
     if text is None:
         ctx.attempt("wayback", f"snapshot {ts}: {note}")
         return None
-    g = gate(text, len(r.body) if not is_pdf(r) else None)
+    g = gate(text, len(r.body) if not is_pdf(r) else None, meta.get("title"))
     if g != "passed":
         ctx.attempt("wayback", f"snapshot {ts}: {g}")
         return None
@@ -791,7 +793,7 @@ def rung_commoncrawl(ctx: Ctx) -> dict | None:
         if text is None:
             ctx.attempt("commoncrawl", note)
             return None
-        g = gate(text, len(body) if not is_pdf(resp) else None)
+        g = gate(text, len(body) if not is_pdf(resp) else None, meta.get("title"))
         if g != "passed":
             ctx.attempt("commoncrawl", g)
             return None
@@ -851,8 +853,10 @@ def fabrication_check(ctx: Ctx) -> tuple[str, str]:
     else:
         evidence = "no-captures-parent-has-captures"
     if prows:
-        if ctx.raw_status in (404, 410) or evidence == "no-captures-parent-has-captures":
+        if ctx.raw_status in (404, 410):
             return "possibly-fabricated", evidence
+        # 401/403 or unknown: a real page behind a bot wall that Wayback never captured
+        # (robots-excluded publishers such as nejm.org) looks identical; do not accuse.
         return "unfetchable", evidence + f" (http {ctx.raw_status}; paywall or bot wall as likely as fabrication)"
     if rows is None and prows is None:
         return "unfetchable", "inconclusive (archive unreachable)"

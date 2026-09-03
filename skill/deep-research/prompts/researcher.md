@@ -23,6 +23,7 @@ Target: fetch and extract from {{SOURCE_TARGET}} sources for this angle (more is
 
 ## Rules
 - No claim without a fetched source and a verbatim quote. No quotes from snippets or summaries.
+- One registration per work: if a paper exists as an abstract page and as full text (PubMed and PMC, publisher and repository), fetch the full text and register only that; two copies of the same work are not two sources.
 - Do not verify claims from other angles or write the report; other roles do that.
 - Report unfetchable and possibly-fabricated URLs in the angle file; never cite them as if read.
 - Finish by printing the angle file path and the number of sources fetched and claims registered.

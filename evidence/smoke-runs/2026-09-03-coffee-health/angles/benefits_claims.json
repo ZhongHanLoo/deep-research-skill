@@ -1,0 +1,107 @@
+[
+  {
+    "source": 5,
+    "angle": "benefits",
+    "text": "In the NIH-AARP cohort (229,119 men, 173,141 women, ages 50-71), after adjusting for smoking and other confounders, men drinking 4-5 cups/day of coffee had a 12% lower risk of death (HR 0.88) than non-drinkers.",
+    "quote": "0.88 (95% CI, 0.84 to 0.93) for 4 or 5 cups",
+    "importance": "central"
+  },
+  {
+    "source": 5,
+    "angle": "benefits",
+    "text": "In the same cohort, women drinking 4-5 cups/day of coffee had a 16% lower risk of death (HR 0.84) than non-drinkers, and both sexes showed a significant dose-response trend (P<0.001).",
+    "quote": "0.84 (95% CI, 0.79 to 0.90) for 4 or 5 cups of coffee per day",
+    "importance": "central"
+  },
+  {
+    "source": 5,
+    "angle": "benefits",
+    "text": "Before adjusting for smoking, coffee drinking was associated with increased mortality risk, showing that unadjusted observational associations can be confounded and reverse after controlling for smoking status.",
+    "quote": "In age-adjusted models, the risk of death was increased among coffee drinkers. However, coffee drinkers were also more likely to smoke, and, after adjustment for tobacco-smoking status and other potential confounders, there was a significant inverse association between coffee consumption and mortality.",
+    "importance": "central"
+  },
+  {
+    "source": 5,
+    "angle": "benefits",
+    "text": "The study found inverse associations between coffee consumption and death from heart disease, respiratory disease, stroke, injuries/accidents, diabetes, and infections, but not cancer, and the authors explicitly note causality cannot be established from the data.",
+    "quote": "Inverse associations were observed for deaths due to heart disease, respiratory disease, stroke, injuries and accidents, diabetes, and infections, but not for deaths due to cancer.",
+    "importance": "central"
+  },
+  {
+    "source": 4,
+    "angle": "benefits",
+    "text": "A dose-response meta-analysis of 28 prospective studies (1,109,272 participants, 45,335 T2D cases) found progressively lower type 2 diabetes risk with higher coffee intake, from RR 0.92 at 1 cup/day down to RR 0.67 at 6 cups/day versus no/rare consumption.",
+    "quote": "the relative risk (RR; 95% CI) for diabetes was 0.92 (0.90-0.94), 0.85 (0.82-0.88), 0.79 (0.75-0.83), 0.75 (0.71-0.80), 0.71 (0.65-0.76), and 0.67 (0.61-0.74) for 1-6 cups/day, respectively",
+    "importance": "central"
+  },
+  {
+    "source": 4,
+    "angle": "benefits",
+    "text": "The reduced type 2 diabetes risk associated with coffee was similar for caffeinated and decaffeinated coffee, suggesting the protective association is not driven by caffeine alone.",
+    "quote": "The RR of diabetes for a 1 cup/day increase was 0.91 (0.89-0.94) for caffeinated coffee consumption and 0.94 (0.91-0.98) for decaffeinated coffee consumption (P for difference = 0.17).",
+    "importance": "central"
+  },
+  {
+    "source": 4,
+    "angle": "benefits",
+    "text": "Comparing highest vs lowest coffee consumption category across pooled studies, the risk of incident type 2 diabetes was 30% lower (pooled RR 0.70).",
+    "quote": "the pooled RR for incident type 2 diabetes was 0.70 (95% CI 0.65–0.75, I2 = 50%, P for heterogeneity = 0.001) for the highest category of consumption",
+    "importance": "supporting"
+  },
+  {
+    "source": 7,
+    "angle": "benefits",
+    "text": "A Mendelian randomization study using 12 genetic variants proxying coffee consumption in UK Biobank (up to 35,979 cases) and FinnGen (up to 17,325 cases) found genetically predicted coffee consumption was not associated with any of 15 studied cardiovascular disease outcomes, contradicting the protective associations seen in observational cohorts.",
+    "quote": "Genetic predisposition to higher coffee consumption was not associated with any of the 15 studied cardiovascular outcomes in univariable MR analysis.",
+    "importance": "central"
+  },
+  {
+    "source": 7,
+    "angle": "benefits",
+    "text": "The authors interpret their null MR findings as suggesting that the cardiovascular benefits of coffee reported in observational studies may be due to residual confounding rather than a causal effect.",
+    "quote": "This Mendelian randomization study showed limited evidence that coffee consumption affects the risk of developing cardiovascular disease, suggesting that previous observational studies may have been confounded.",
+    "importance": "central"
+  },
+  {
+    "source": 7,
+    "angle": "benefits",
+    "text": "The odds ratios per 50% increase in genetically predicted coffee consumption ranged widely and straddled 1.0 across cardiovascular outcomes (e.g., 0.97 for intracerebral hemorrhage to 1.26 for deep vein thrombosis in UK Biobank), consistent with no causal effect.",
+    "quote": "The odds ratio per 50% increase in genetically predicted coffee consumption ranged from 0.97 (95% confidence interval (CI), 0.63, 1.50) for intracerebral hemorrhage to 1.26 (95% CI, 1.00, 1.58) for deep vein thrombosis in the UK Biobank",
+    "importance": "central"
+  },
+  {
+    "source": 7,
+    "angle": "benefits",
+    "text": "The authors note their MR design tested only linear associations, so it could not rule out a protective effect specific to moderate (as opposed to heavy) coffee consumption on some cardiovascular outcomes.",
+    "quote": "Given that this MR study merely examined the linear associations between coffee consumption and cardiovascular diseases, our null findings could not rule out a possible protective effect of moderate but not heavy coffee consumption on certain cardiovascular outcomes",
+    "importance": "supporting"
+  },
+  {
+    "source": 11,
+    "angle": "benefits",
+    "text": "In a UK Biobank prospective cohort of 498,158 adults followed a median 12.1 years, coffee consumption showed a J-shaped (nonlinear) association with all-cause mortality, with about 1 cup/day linked to the lowest risk.",
+    "quote": "The association between separate coffee consumption and the risk of all-cause mortality was J-shaped, whereas that of separate tea consumption was reverse J-shaped. Drinking one cup of coffee or three cups of tea per day seemed to link with the lowest risk of mortality.",
+    "importance": "central"
+  },
+  {
+    "source": 11,
+    "angle": "benefits",
+    "text": "After full adjustment for confounders, drinking 1-2 cups/day of coffee alone was associated with a 9% lower all-cause mortality risk (HR 0.91) and a non-significant 6% lower cardiovascular mortality risk (HR 0.94) versus no coffee.",
+    "quote": "< 1–2 cups/day of coffee was inversely associated with a lower risk of health outcomes: 0.91 (0.88–0.93) for all-cause, 0.94 (0.88–1.00) for CVD, and 0.84 (0.78–0.89) for respiratory disease mortality",
+    "importance": "central"
+  },
+  {
+    "source": 11,
+    "angle": "benefits",
+    "text": "At the highest coffee intake category (5+ cups/day), all-cause mortality benefit was attenuated toward null (HR 0.97, CI crossing 1) compared with lower intake levels, consistent with a U/J-shaped rather than linear dose-response.",
+    "quote": "Model 2 b 1.00 (Ref.)0.91 (0.88–0.93)0.92 (0.89–0.95)0.97 (0.93–1.01)",
+    "importance": "supporting"
+  },
+  {
+    "source": 11,
+    "angle": "benefits",
+    "text": "The authors acknowledge reverse causation and residual confounding (especially from smoking) as limitations that could explain the observed inverse associations in this observational cohort.",
+    "quote": "our conclusions may be affected by reverse causation, although results were similar after excluding the first 3 years of follow-up.",
+    "importance": "supporting"
+  }
+]

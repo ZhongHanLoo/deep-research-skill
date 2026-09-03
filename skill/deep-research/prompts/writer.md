@@ -39,6 +39,7 @@ Copy the numbered list from sources.md exactly (gap-free, same numbers).
 Brief mode: only the title line, Summary and Key findings, then the Sources list; 150-300 words before the sources.
 
 ## Rules
+- Write the file with whatever file-writing means your harness allows (a shell heredoc works everywhere).
 - `unverified` and `single-source` claims may appear, labelled as such in the findings table and hedged in prose ("one source reports…"). Never present them as established.
 - Contradicted claims appear only in the disagreements section unless you state the disagreement inline.
 - Archived-only or paraphrase-only sources (see Evidence column in sources.md) are cited with that caveat ("archived snapshot of …").

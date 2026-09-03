@@ -10,6 +10,7 @@ Contract: skill/deep-research/reference/contracts.md (sections 1, 2, 4, 5, 6).
 
   ledger.py --run DIR init --question Q [--slug S] [--preset P] [--mode M] [--root DIR]
   ledger.py --run DIR add-url URL [--angle A] [--round R] [--title T] [--ignore-robots] [--fresh]
+  ledger.py --run DIR refetch N [--ignore-robots] [--fresh] [--keep-title]
   ledger.py --run DIR add-snippet URL --snippet TEXT [--angle A] [--title T]
   ledger.py --run DIR grade N --grade G [--published DATE] [--publisher P]
   ledger.py --run DIR claim add --source N --angle A --text T --quote Q --importance I [--round R]
@@ -48,6 +49,15 @@ IMPORTANCE = ("central", "supporting", "tangential")
 GRADES = ("primary", "secondary", "blog", "forum", "unreliable")
 LABELS = ("contradicted", "corroborated", "single-source", "unverified")
 TWO_LEVEL_SUFFIXES = {"co.uk", "ac.uk", "org.uk", "gov.uk", "com.au", "co.jp", "co.nz", "com.br", "co.za"}
+# Hosts that aggregate many independent works: two different URLs there are two sources,
+# not one (a PubMed abstract and a PMC article of *different* papers are independent;
+# the same paper mirrored on both is not, and that is left to the verifier's judgment).
+REPOSITORY_HOSTS = ("ncbi.nlm.nih.gov", "europepmc.org", "arxiv.org", "ar5iv.labs.arxiv.org", "doi.org", "semanticscholar.org",
+                    "researchgate.net", "biorxiv.org", "medrxiv.org", "ssrn.com", "jstor.org", "sciencedirect.com",
+                    "springer.com", "wiley.com", "nature.com", "science.org", "cell.com", "thelancet.com", "bmj.com",
+                    "jamanetwork.com", "nejm.org", "tandfonline.com", "sagepub.com", "oup.com", "academic.oup.com",
+                    "cambridge.org", "mdpi.com", "frontiersin.org", "plos.org", "web.archive.org", "github.com",
+                    "medium.com", "substack.com", "wordpress.com", "blogspot.com")
 
 
 # ----------------------------------------------------------------------------
@@ -231,6 +241,16 @@ class Run:
 # label derivation (contract §4)
 # ----------------------------------------------------------------------------
 
+def independence_key(url: str) -> str:
+    """Two sources are independent when their keys differ: the registrable domain,
+    except on repository/publisher hosts where each distinct URL is its own work."""
+    host = host_of(url)
+    dom = registrable_domain(host)
+    if any(host == h or host.endswith("." + h) or dom == h for h in REPOSITORY_HOSTS):
+        return normalize_url(url)
+    return dom
+
+
 def derive_label(claim: dict, sources_by_n: dict) -> str:
     if claim.get("quote_verified") is False:
         return "unverified"
@@ -239,11 +259,11 @@ def derive_label(claim: dict, sources_by_n: dict) -> str:
     hosts = set()
     orig = sources_by_n.get(claim.get("source"))
     if orig:
-        hosts.add(registrable_domain(host_of(orig.get("url", ""))))
+        hosts.add(independence_key(orig.get("url", "")))
     for ev in claim.get("supports", []):
         s = sources_by_n.get(ev.get("source"))
         if s:
-            hosts.add(registrable_domain(host_of(s.get("url", ""))))
+            hosts.add(independence_key(s.get("url", "")))
     hosts.discard("")
     if len(hosts) >= 2:
         return "corroborated"
@@ -414,6 +434,36 @@ def cmd_add_url(args) -> None:
             (run.path / "raw" / f"{n}.meta.json").write_text(json.dumps(rec, ensure_ascii=False, indent=2), encoding="utf-8")
             _apply_fetch_record(row, rec, run, n, args.title)
         run.save_sources(data)
+    out(_summary(row))
+    sys.exit(0 if row["status"] == "ok" else 1)
+
+
+def cmd_refetch(args) -> None:
+    """Re-run the fetch chain for an existing source (after a fetch.py fix or for a re-audit)."""
+    run = Run(args.run).require()
+    row = run.source_by_n(args.n)
+    if not row:
+        die(f"no source [{args.n}]")
+    rec, err = _run_fetch(run, row["url"], args.n, args.ignore_robots, args.fresh)
+    with run.lock():
+        data = run.sources()
+        row = next(s for s in data["sources"] if s["n"] == args.n)
+        keep_grade = row.get("grade")
+        if rec is None:
+            row.update({"status": "unfetchable", "fetch_method": "none", "quote_safe": False, "text_path": None,
+                        "attempts": [{"method": "none", "result": err}], "notes": err})
+        else:
+            (run.path / "raw" / f"{args.n}.meta.json").write_text(json.dumps(rec, ensure_ascii=False, indent=2), encoding="utf-8")
+            _apply_fetch_record(row, rec, run, args.n, row.get("title") if args.keep_title else None)
+            if rec.get("status") != "ok":
+                try:
+                    (run.path / "raw" / f"{args.n}.txt").unlink()
+                except FileNotFoundError:
+                    pass
+        row["grade"] = keep_grade
+        run.save_sources(data)
+        cdata = run.claims()
+        run.save_claims(cdata)  # labels may change if quote_safe changed
     out(_summary(row))
     sys.exit(0 if row["status"] == "ok" else 1)
 
@@ -790,6 +840,13 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--ignore-robots", action="store_true")
     s.add_argument("--fresh", action="store_true")
     s.set_defaults(fn=cmd_add_url)
+
+    s = sub.add_parser("refetch")
+    s.add_argument("n", type=int)
+    s.add_argument("--ignore-robots", action="store_true")
+    s.add_argument("--fresh", action="store_true")
+    s.add_argument("--keep-title", action="store_true")
+    s.set_defaults(fn=cmd_refetch)
 
     s = sub.add_parser("add-snippet")
     s.add_argument("url")

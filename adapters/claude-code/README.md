@@ -21,6 +21,7 @@ Invoke with `/deep-research <question>` (optionally `--preset quick|standard|dee
 | plan checkpoint | `AskUserQuestion` or a plain message; skipped with `--yes` |
 
 ## Notes
+- Subagents launched with the Agent tool cannot use the `Write` tool for deliverables (the harness answers "Subagents should return findings as text, not write report files"); the writer role therefore writes `report.md` with a Bash heredoc, and researchers write angle notes the same way. Observed 2026-09-03.
 - Subagents inherit no context: fill every placeholder in the role prompt (question, run dir, absolute scripts path, angle, hypothesis, round, targets).
 - Pass the skill's absolute `scripts/` path; subagents run from the project cwd.
 - `WebFetch` output is a model summary with a 125-character quote cap (see `research/literature/fetch-reliability-survey.md` §1.8); it is never `quote_safe`.
