@@ -24,6 +24,7 @@ All twelve gap questions are locked in `REQUIREMENTS.md` (2026-09-02). Read it b
 
 ## Working rules
 - **Subagents:** always launch Agent-tool subagents with `model: "opus"` (user preference, 2026-09-02). Do not let them inherit Fable. If Opus returns repeated `529 Overloaded` (six failures on 2026-09-03), do the work in the main session rather than burning retries; for deep-research smoke/pilot runs the generator is Sonnet per REQ 4.
+- **Pilot runs:** follow `eval/RUNBOOK.md` step by step (main agent = the session; Sonnet role agents; Opus judges). Record per-agent tokens in `eval/private/results/<date>-B/tokens.json`. A subscription session limit was hit after ~3.5M Sonnet tokens in one afternoon (2026-09-03); the ledger survives killed agents, so re-run `eval/make_batches.py` and relaunch only what is unchecked.
 - **Scripts contract:** `skill/deep-research/reference/contracts.md` is binding for prompts, scripts and adapters; change it first, then the code. Tests: `skill/deep-research/tests/integration.sh` (live network) and `tests/test_cite_check.py` (offline).
 - **Shell:** the interactive shell is zsh; `echo ====` fails (`=cmd` expansion) and `$VAR` with spaces is not word-split. Put multi-step tests in a `bash` script file.
 - Start every session by reading `progress.md` (at least the "Current state" section at the top and the latest entries at the bottom).

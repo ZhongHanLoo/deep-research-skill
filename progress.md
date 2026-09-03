@@ -5,8 +5,8 @@
 ## Current state (keep updated)
 - **Phase:** 1 — design v1 from literature. Requirements locked in `REQUIREMENTS.md` (2026-09-02).
 - **Last action (2026-09-03, session 2):** Stage B cost probe: technology-3 and science-health-3 run end to end at `standard` depth, judged by Opus (0.88 and 0.96 weighted compliance), with six fixes made along the way (#34-#35). Per-agent token log and findings in `eval/private/results/2026-09-03-B/{tokens,findings}.{json,txt}`.
-- **Next action:** user decision in entry #35: (a) run the remaining three probe questions as-is, (b) apply the three fixes (mechanical central cap, writer self-check of length, adjacent-rule extraction) then run them, or (c) go to the comparison now. Recommended (b) then comparison on all five. User has not yet given feedback on `skill/DESIGN.md`; v1 proceeds as drafted (entry #29).
-- **Session log:** session 1 ended 2026-09-02 after entry #27 (HEAD 7222c8e). Session 2 started 2026-09-03.
+- **Next action:** (entry #36) run the remaining three probe questions (`business-finance-3`, `policy-law-3`, `culture-history-3`) per `eval/RUNBOOK.md` with the three fixes in place; then Stage C comparison against the built-in `/deep-research` on all five stable questions. User has not yet given feedback on `skill/DESIGN.md`; v1 proceeds as drafted (entry #29).
+- **Session log:** session 1 ended 2026-09-02 after entry #27 (HEAD 7222c8e). Session 2 ran 2026-09-03 15:00-23:30 BST, entries #29-#36.
 - **Open questions:** user feedback on DESIGN.md (verification default, budget split) still welcome; both are preset/prompt parameters.
 
 ---
@@ -340,3 +340,12 @@ Citation checks: 249/249 quotes verified; 0 unknown citations; all citations tra
 3. Recall gaps are at the search stage: rubric items missed were all "adjacent facts" (a rule in a spec section the researcher extracted from, a companion recommendation on the same guideline page). A cheap mitigation: an extraction rule "for spec/guideline pages, extract every normative rule in the sections you cite, not only those matching the hypothesis"; measure in the next probe.
 4. Quota: ~4.1M generation tokens for two questions; the session limit was hit once. The full 15-question workflow-B pilot at this setting ≈ 25-35M tokens.
 **Decision for the user (one of):** (a) run the remaining three probe questions now, as-is, for cost/variance data; (b) apply fixes 1-3 first (about an hour), then run the remaining three; (c) stop the probe here and move to the comparison: user runs built-in `/deep-research` on these two questions, Opus judges both, `eval/score.py` reports. **Recommendation: (b) then (c) on all five** — the fixes address the two largest measured costs and the measured miss class, and the comparison is what REQ 4 asks for.
+
+## 2026-09-03 #36 — Option (b) applied: three fixes, runbook, batch script; session 2 closing
+**User:** "go with the recommendation" (entry #35 option b, then the comparison on all five questions).
+**Fixes (committed):**
+1. **Mechanical central cap** in `ledger.py claim add`: at most 4 central claims per source (`CENTRAL_CAP`, env `DEEP_RESEARCH_CENTRAL_CAP`, 0 disables); extras are written as `supporting` with note `importance-capped` and reported as `capped_to_supporting`. Unit tests `tests/test_ledger.py` (3/3) cover the cap, dedup, quote rejection, independence keys (incl. RFC mirror) and label derivation. Expected effect: central claims per run from 85-91 to roughly 40-60, verification cost down by about half.
+2. **Writer self-check**: `prompts/writer.md` now ends with running `cite_check.py --no-network`, fixing errors (tracing, length), doing the coverage pass, and iterating to `## OK`; SKILL.md phase 6 says so. Expected effect: no separate 100-260k-token fix/trim passes.
+3. **Adjacent-rule extraction**: `prompts/researcher.md` requires extracting every normative rule/recommendation in cited sections of specs, standards, guidelines and regulator pages, plus companion recommendations on the same page. Targets the measured miss class (all three failed rubric items).
+**Operator tooling:** `eval/make_batches.py` (verifier batch files from unchecked claims; safe to re-run after interruptions) and `eval/RUNBOOK.md` (the exact eight-step procedure used for Stage B, including baseline A steps and observed costs). CLAUDE.md, README.md, DESIGN.md §2, contracts §4 updated.
+**Next session:** run `business-finance-3`, `policy-law-3`, `culture-history-3` per the runbook with the fixes in place (record tokens; compare cost and compliance with the two pre-fix runs), then Stage C: the user runs the built-in `/deep-research` on all five stable questions, Opus judges, `eval/score.py`.

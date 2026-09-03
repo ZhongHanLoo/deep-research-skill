@@ -6,7 +6,7 @@ Built and tested on Claude Code. Written to the open Agent Skills standard (`SKI
 
 ## Status
 
-Round 1, in progress (started 2026-09-02). Requirements locked (`REQUIREMENTS.md`), four literature surveys done, v1 design written (`skill/DESIGN.md`), and the skill implemented on 2026-09-03 (`skill/deep-research/`). Scripts pass their unit and live integration tests; the model-driven smoke test and the pilot comparison against Claude Code's built-in `/deep-research` are next.
+Round 1, in progress (started 2026-09-02). Requirements locked (`REQUIREMENTS.md`), four literature surveys done, v1 design written (`skill/DESIGN.md`), and the skill implemented on 2026-09-03 (`skill/deep-research/`). Scripts pass their unit and live integration tests; a smoke test and a two-question cost probe at `standard` depth have run (Opus-judged rubric compliance 0.88 and 0.96); the remaining probe questions and the comparison against Claude Code's built-in `/deep-research` are next (`eval/RUNBOOK.md`).
 
 ## Install and use (Claude Code)
 

@@ -36,6 +36,8 @@ Principle: the marginal agent goes to **reading**, not adjudicating (R3). Fetch 
 | standard | 3-5 | 2 | 12-18 | corroborate all central; quote-check supporting | 800-1500 words |
 | deep | 5-6 | 3 | 25-40 | corroborate central + supporting (two voters); quote-check tangential | 1500-3000 words, hard ceiling 3500 |
 
+**Measured 2026-09-03 (Stage B probe, two `standard` runs):** verification took ~50% of generation tokens because researchers marked 70-90% of claims central regardless of prompt wording; the ledger now caps central claims at 4 per source (extra ones become supporting and are only quote-checked). Writers overshot length by 20-70%; the citation script now enforces the ceiling and the writer self-checks before finishing. Missed rubric items were adjacent normative rules on already-fetched pages; the researcher prompt now requires extracting every rule in cited sections.
+
 Recommended agent count shown at the checkpoint = number of round-1 angles (+1 writer). The user may set any count; **sequential mode** runs the same agent prompts one at a time and produces an identical run folder (REQ 7). Effort-scaling rule stated in the prompt: simple fact-finding → 1 agent; comparison → 2-4; open-ended → 5+ (R14).
 
 ## 3. Run folder (contract from REQ 2)

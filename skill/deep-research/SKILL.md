@@ -48,7 +48,7 @@ Fill `prompts/brief.md` and write `<run>/00-brief.md`: refined question, 3-6 ang
 For each angle, run one **researcher** with `prompts/researcher.md` filled (question, run dir, angle, hypothesis, per-angle source target). Parallel: launch all angles at once. Sequential: one after another, same prompt. Each researcher:
 1. searches with the harness search tool, keyword-shaped queries, broad then narrow, deduplicated; treats results as pointers only;
 2. fetches each chosen pointer with `S/ledger.py --run <run> add-url <url> --angle <angle> --round <r>` (returns `[n]` and `raw/<n>.txt`);
-3. reads `raw/<n>.txt` and extracts 2-6 falsifiable claims per source, each with a verbatim quote, via `S/ledger.py claim add ...` (the script rejects quotes not found in the text; re-copy, do not paraphrase);
+3. reads `raw/<n>.txt` and extracts 2-8 atomic claims per source, each with a verbatim quote, via `S/ledger.py claim add ...` (the script rejects quotes not found in the text; re-copy, do not paraphrase; it also caps `central` at 4 per source and writes the rest as `supporting`);
 4. grades the source (`S/ledger.py grade <n> --grade ...`);
 5. writes `angles/<angle>.md` (headings in `reference/contracts.md` §9) including suggested sub-questions.
 
@@ -66,7 +66,7 @@ Verification is tiered so that reading keeps more budget than adjudicating (one 
 Run one **verifier** per batch with `prompts/verifier.md` (deep: two verifiers per corroboration batch, independently; the ledger merges their evidence). Verifiers record with `claim evidence` / `claim checked` and never set labels; the ledger derives them. Never launch more verifiers than researchers ran.
 
 ### 6. Synthesize
-One **writer** with `prompts/writer.md`. Inputs: `00-brief.md`, `S/ledger.py claims list --format md` (all labels), `sources.md` (run `S/ledger.py render` first). The writer never reads raw pages and never invents `[n]`. Structure: exec summary → key-findings table → body with `[n]` → disagreements → what this could not find → methodology → sources. Length per preset; `brief` mode = the summary and findings table only.
+One **writer** with `prompts/writer.md`. Inputs: `00-brief.md`, `S/ledger.py claims list --format md` (all labels), `sources.md` (run `S/ledger.py render` first). The writer never reads raw pages and never invents `[n]`. The writer runs `S/cite_check.py --no-network` itself before finishing (tracing, length, coverage) so the main agent's pass in phase 7 normally finds only health issues. Structure: exec summary → key-findings table → body with `[n]` → disagreements → what this could not find → methodology → sources. Length per preset; `brief` mode = the summary and findings table only.
 
 ### 7. Citation pass
 ```

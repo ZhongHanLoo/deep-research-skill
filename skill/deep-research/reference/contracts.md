@@ -142,7 +142,7 @@ Exit code 0 on `ok`, 1 on `unfetchable`/`possibly-fabricated`/`skipped-robots`, 
 }
 ```
 
-- `importance`: `central` | `supporting` | `tangential` (extractor's judgment relative to the research question). Claims are atomic: one fact, ≤25 words; several claims may share one quote.
+- `importance`: `central` | `supporting` | `tangential` (extractor's judgment relative to the research question). Claims are atomic: one fact, ≤25 words; several claims may share one quote. **Mechanical cap (2026-09-03):** `ledger.py` writes at most `CENTRAL_CAP` (default 4, env `DEEP_RESEARCH_CENTRAL_CAP`, 0 disables) central claims per source; further central claims are stored as `supporting` with note `importance-capped: …` and reported in the `claim add` output (`capped_to_supporting`).
 - `checked` with a note starting `quote-check:` means the claim was quote-checked only (no search); it stays `single-source`.
 - `supports` / `contradicts`: lists of `{"source": n, "note": "...", "by": "<agent label>"}` added by verifiers. Union semantics: two verifiers can add independently.
 - `checked`: true once any verifier has finished looking at the claim (set by `claim checked` or by any `claim evidence` call).

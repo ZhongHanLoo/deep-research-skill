@@ -48,6 +48,12 @@ SKILL_VERSION = "1.0.0"
 IMPORTANCE = ("central", "supporting", "tangential")
 GRADES = ("primary", "secondary", "blog", "forum", "unreliable")
 LABELS = ("contradicted", "corroborated", "single-source", "unverified")
+# Mechanical importance cap: at most this many `central` claims per source; further
+# central claims are written as `supporting` with a note. Prompt text alone did not
+# hold (71/101 and 25/34 claims marked central in the 2026-09-03 probe), and each
+# central claim costs ~10-15k tokens to corroborate. Override with env
+# DEEP_RESEARCH_CENTRAL_CAP (0 disables).
+CENTRAL_CAP = int(os.environ.get("DEEP_RESEARCH_CENTRAL_CAP", "4"))
 TWO_LEVEL_SUFFIXES = {"co.uk", "ac.uk", "org.uk", "gov.uk", "com.au", "co.jp", "co.nz", "com.br", "co.za"}
 # Hosts that aggregate many independent works: two different URLs there are two sources,
 # not one (a PubMed abstract and a PMC article of *different* papers are independent;
@@ -591,17 +597,31 @@ def cmd_claim_add(args) -> None:
             valid.append(claim)
         else:
             rejected.append({"index": i, "reason": reason, "nearest": nearest, "text": (item.get("text") if isinstance(item, dict) else None)})
+    capped = []
     if valid:
         with run.lock():
             data = run.claims()
+            central_by_source: dict = {}
+            for c in data["claims"]:
+                if c["importance"] == "central":
+                    central_by_source[c["source"]] = central_by_source.get(c["source"], 0) + 1
             for c in valid:
+                if CENTRAL_CAP and c["importance"] == "central":
+                    if central_by_source.get(c["source"], 0) >= CENTRAL_CAP:
+                        c["importance"] = "supporting"
+                        c["notes"].append(f"importance-capped: source already has {CENTRAL_CAP} central claims")
+                        capped.append(c)
+                    else:
+                        central_by_source[c["source"]] = central_by_source.get(c["source"], 0) + 1
                 c["id"] = f"c{data['next_id']:03d}"
                 data["next_id"] += 1
                 data["claims"].append(c)
             run.save_claims(data)
     if args.from_json:
         out({"added": [{"id": c["id"], "source": c["source"], "importance": c["importance"], "quote_verified": c["quote_verified"]} for c in valid],
-             "rejected": rejected})
+             "rejected": rejected,
+             "capped_to_supporting": [c["id"] for c in capped],
+             "note": (f"central cap is {CENTRAL_CAP} per source; {len(capped)} claim(s) written as supporting" if capped else None)})
         sys.exit(3 if rejected else 0)
     if rejected:
         r = rejected[0]
