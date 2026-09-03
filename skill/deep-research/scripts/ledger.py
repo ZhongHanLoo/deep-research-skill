@@ -241,9 +241,35 @@ class Run:
 # label derivation (contract §4)
 # ----------------------------------------------------------------------------
 
+_WORK_PATTERNS = (
+    (re.compile(r"(?:rfc-editor\.org|ietf\.org|httpwg\.org|greenbytes\.de|hjp\.at)/.*?rfc[-/]?(\d{3,5})(?:\.(?:txt|html))?(?:[/#?]|$)", re.I), "rfc:{}"),
+    (re.compile(r"(10\.\d{4,9}/[^\s?#]+)"), "doi:{}"),
+    (re.compile(r"arxiv\.org/(?:abs|pdf|html)/(\d{4}\.\d{4,5})(?:v\d+)?", re.I), "arxiv:{}"),
+    (re.compile(r"pubmed\.ncbi\.nlm\.nih\.gov/(\d+)", re.I), "pmid:{}"),
+    (re.compile(r"ncbi\.nlm\.nih\.gov/(?:pmc/)?articles/(PMC\d+)", re.I), "pmc:{}"),
+    (re.compile(r"europepmc\.org/(?:article/MED/|abstract/MED/|api/fulltextRepo\?pprId=)?(\d{6,})", re.I), "pmid:{}"),
+)
+
+
+def work_key(url: str) -> str | None:
+    """Identity of the underlying work when the URL reveals it (RFC number, DOI,
+    arXiv id, PubMed/PMC id), so mirrors of one document are not counted as
+    independent sources (added 2026-09-03 after verifiers cited datatracker
+    copies of RFCs as corroboration of rfc-editor copies)."""
+    for pat, fmt in _WORK_PATTERNS:
+        m = pat.search(url)
+        if m:
+            return fmt.format(m.group(1).lower().rstrip("/."))
+    return None
+
+
 def independence_key(url: str) -> str:
-    """Two sources are independent when their keys differ: the registrable domain,
-    except on repository/publisher hosts where each distinct URL is its own work."""
+    """Two sources are independent when their keys differ: the work itself when
+    identifiable, else the registrable domain, except on repository/publisher
+    hosts where each distinct URL is its own work."""
+    wk = work_key(url)
+    if wk:
+        return wk
     host = host_of(url)
     dom = registrable_domain(host)
     if any(host == h or host.endswith("." + h) or dom == h for h in REPOSITORY_HOSTS):

@@ -142,7 +142,7 @@ def http(url: str, *, method: str = "GET", headers: dict | None = None, timeout:
                     if not chunk:
                         break
                     body += chunk
-            return Resp(r.status, dict(r.headers), body, r.geturl())
+            return Resp(r.status, dict(r.headers), _decode_encoding(body, r.headers.get("Content-Encoding")), r.geturl())
     except error.HTTPError as e:
         try:
             body = e.read(min(max_bytes, 1 << 20))
@@ -160,6 +160,28 @@ def http(url: str, *, method: str = "GET", headers: dict | None = None, timeout:
         return Resp(err="timeout")
     except Exception as e:  # noqa: BLE001
         return Resp(err=f"{e.__class__.__name__}: {str(e)[:80]}")
+
+
+def _decode_encoding(body: bytes, enc: str | None) -> bytes:
+    """Undo Content-Encoding (gzip/deflate; brotli if the module exists). Archive
+    copies are served with the original encoding headers and urllib does not
+    decode them (observed on JAMA pages via Wayback, 2026-09-03)."""
+    enc = (enc or "").lower().strip()
+    try:
+        if enc in ("gzip", "x-gzip") or body[:2] == b"\x1f\x8b":
+            return gzip.decompress(body)
+        if enc == "deflate":
+            import zlib
+            try:
+                return zlib.decompress(body)
+            except zlib.error:
+                return zlib.decompress(body, -zlib.MAX_WBITS)
+        if enc == "br" and importlib.util.find_spec("brotli") is not None:
+            import brotli  # type: ignore
+            return brotli.decompress(body)
+    except Exception:  # noqa: BLE001
+        return body
+    return body
 
 
 def dns_resolves(url: str) -> bool:
@@ -383,7 +405,11 @@ def gate(text: str, html_len: int | None = None, title: str | None = None) -> st
         return "failed:unextracted-pdf"
     if len(t) < MIN_CHARS:
         return "failed:length"
-    head = t[:5000].lower()
+    sample = t[:5000]
+    junk = sum(1 for ch in sample if ch == "\ufffd" or (ord(ch) < 32 and ch not in "\n\r\t"))
+    if junk / max(1, len(sample)) > 0.05:
+        return "failed:binary"
+    head = sample.lower()
     if any(m in head for m in BLOCK_MARKERS):
         return "failed:block-page"
     if len(t) < 1500 and any(m in head for m in CONSENT_MARKERS):
