@@ -150,6 +150,18 @@ def check_report(run: ledger.Run, problems: list) -> dict:
         elif s.get("evidence_strength") == "archived":
             problems.append({"kind": "archived-only", "severity": "info", "n": n, "message": f"[{n}] is an archived copy ({s.get('snapshot_date')})", "hint": "cite as an archived snapshot"})
     stats["tracing"] = check_tracing(body, claims, sources, problems)
+    words = len(MARKER_RE.sub("", body).split())
+    stats["words_before_sources"] = words
+    meta = run.meta()
+    ceilings = {("quick", "report"): 600, ("standard", "report"): 1500, ("deep", "report"): 3000,
+                ("quick", "brief"): 300, ("standard", "brief"): 300, ("deep", "brief"): 300}
+    ceiling = ceilings.get((meta.get("preset"), meta.get("mode")))
+    hard = int(ceiling * 1.2) if ceiling else None
+    if hard and words > hard:
+        problems.append({"kind": "over-length", "severity": "error", "message": f"{words} words before Sources; hard ceiling for {meta.get('preset')}/{meta.get('mode')} is {hard} (target {ceiling})",
+                         "hint": "cut restated findings and framing prose; keep numbers, dates, names; the writer's own word counts have been unreliable, trust this one"})
+    elif ceiling and words > ceiling:
+        problems.append({"kind": "over-target", "severity": "warning", "message": f"{words} words before Sources; target ceiling is {ceiling}", "hint": "trim if anything is restated"})
     used = set()
     for m in MARKER_RE.finditer(body):
         used.update(m.group(1).split())
@@ -291,6 +303,8 @@ def main(argv=None) -> int:
         t = r.get("tracing") or {}
         if t:
             print(f"- Tracing: {t.get('markers', 0)} claim markers; {t.get('traced', 0)} citations traced, {t.get('untraced', 0)} not traced, {t.get('unmarked_segments', 0)} cited segments without a marker")
+        if r.get("words_before_sources") is not None:
+            print(f"- Length: {r['words_before_sources']} words before Sources (markers excluded)")
         if r.get("uncited_central") is not None:
             print(f"- Coverage: {len(r['uncited_central'])} verified central claims never used in the report (listed under Problems as info)")
         print(f"- Health: {h if h else 'skipped (--no-network)'}")
