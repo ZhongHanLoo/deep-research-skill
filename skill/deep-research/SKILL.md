@@ -72,7 +72,7 @@ One **writer** with `prompts/writer.md`. Inputs: `00-brief.md`, `S/ledger.py cla
 ```
 python3 S/cite_check.py --run <run>
 ```
-Fix every `error` it reports: wrong quotes (re-copy from `raw/<n>.txt` or drop the claim), unknown `[n]`, literal URLs not in the registry, possibly-fabricated sources cited, and **citations not traced to a claim** (the writer marks each cited sentence with `<!-- cNNN -->`; a `[n]` that none of the named claims rests on is rejected). Re-run until it exits 0. If a fix needs new evidence, that is a sub-question: run one more researcher, not a rewrite from memory.
+Fix every `error` it reports: wrong quotes (re-copy from `raw/<n>.txt` or drop the claim), unknown `[n]`, literal URLs not in the registry, possibly-fabricated sources cited, and **citations not traced to a claim** (the writer marks each cited sentence with `<!-- cNNN -->`; a `[n]` that none of the named claims rests on is rejected). Then read the **coverage list** (verified central claims the report never used) and give it to the writer for one pass: add each one that answers part of the question, leave the rest. Retrieved-but-unused evidence is the largest omission class measured in the literature, and the smoke pilot lost two rubric items this way. Re-run until it exits 0. If a fix needs new evidence, that is a sub-question: run one more researcher, not a rewrite from memory.
 
 ### 8. Finalize
 ```

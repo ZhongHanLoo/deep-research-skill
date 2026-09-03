@@ -150,6 +150,15 @@ def check_report(run: ledger.Run, problems: list) -> dict:
         elif s.get("evidence_strength") == "archived":
             problems.append({"kind": "archived-only", "severity": "info", "n": n, "message": f"[{n}] is an archived copy ({s.get('snapshot_date')})", "hint": "cite as an archived snapshot"})
     stats["tracing"] = check_tracing(body, claims, sources, problems)
+    used = set()
+    for m in MARKER_RE.finditer(body):
+        used.update(m.group(1).split())
+    uncited = [c for c in claims if c["importance"] == "central" and c["label"] in ("corroborated", "single-source") and c["id"] not in used]
+    stats["uncited_central"] = [c["id"] for c in uncited]
+    for c in uncited:
+        problems.append({"kind": "central-claim-unused", "severity": "info", "claim": c["id"], "n": c["source"],
+                         "message": f"{c['id']} ({c['label']}, [{c['source']}]) is never used: {c['text'][:110]}",
+                         "hint": "retrieved but unused evidence is the largest omission class; add it if it answers part of the question, else leave it"})
     contradicted_sources = {c["source"] for c in claims if c["label"] == "contradicted"}
     for n in sorted(contradicted_sources & cited):
         for p in paras:
@@ -282,6 +291,8 @@ def main(argv=None) -> int:
         t = r.get("tracing") or {}
         if t:
             print(f"- Tracing: {t.get('markers', 0)} claim markers; {t.get('traced', 0)} citations traced, {t.get('untraced', 0)} not traced, {t.get('unmarked_segments', 0)} cited segments without a marker")
+        if r.get("uncited_central") is not None:
+            print(f"- Coverage: {len(r['uncited_central'])} verified central claims never used in the report (listed under Problems as info)")
         print(f"- Health: {h if h else 'skipped (--no-network)'}")
         print()
         print("## Problems" if problems else "## Problems: none")
