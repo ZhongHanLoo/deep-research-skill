@@ -38,6 +38,9 @@ Copy the numbered list from sources.md exactly (gap-free, same numbers).
 ```
 Brief mode: only the title line, Summary and Key findings, then the Sources list; 150-300 words before the sources.
 
+## Claim markers (required)
+End every sentence and every table row that carries a citation with an HTML comment naming the claim ids it rests on, e.g. `Diabetes risk falls with dose [4][14]. <!-- c004 -->` or `| 3 | … | high | [4][14] <!-- c004 --> |`. Several ids may share one marker: `<!-- c001 c015 -->`. Cite in a sentence only the sources of the claims named in its marker: a claim's own `[n]`, and the `[m]` sources listed under its supports/contradicts. The citation pass rejects any other pairing. Markers are invisible when the Markdown is rendered.
+
 ## Rules
 - Write the file with whatever file-writing means your harness allows (a shell heredoc works everywhere).
 - `unverified` and `single-source` claims may appear, labelled as such in the findings table and hedged in prose ("one source reports…"). Never present them as established.

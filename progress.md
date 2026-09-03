@@ -5,7 +5,7 @@
 ## Current state (keep updated)
 - **Phase:** 1 — design v1 from literature. Requirements locked in `REQUIREMENTS.md` (2026-09-02).
 - **Last action (2026-09-03, session 2):** implemented `skill/deep-research/` (entry #30) and smoke-tested the whole workflow with Sonnet role agents on one question; it passed after four fixes (entry #31). Run folder: `evidence/smoke-runs/2026-09-03-coffee-health/`.
-- **Next action:** Phase 2 pilot per REQ 4 (12-15 questions, five domains, our skill vs built-in `/deep-research`, Sonnet generator, Opus judge). First write the private question set and rubrics under `eval/private/`, then run both workflows. User has not yet given feedback on `skill/DESIGN.md`; v1 proceeds as drafted (entry #29).
+- **Next action:** Phase 2, Stage A: write the private question set and rubrics under `eval/private/` (entry #32 plan), then a 5-question cost probe at `standard` depth, then the full pilot vs built-in `/deep-research` (Sonnet generator, Opus judge). User has not yet given feedback on `skill/DESIGN.md`; v1 proceeds as drafted (entry #29).
 - **Session log:** session 1 ended 2026-09-02 after entry #27 (HEAD 7222c8e). Session 2 started 2026-09-03.
 - **Open questions:** user feedback on DESIGN.md (verification default, budget split) still welcome; both are preset/prompt parameters.
 
@@ -295,3 +295,11 @@ User paused to read `skill/DESIGN.md` and return with feedback. Points flagged f
 Also added `ledger.py refetch N` (re-run the chain for a registered source; needed for re-audits and after fetch fixes).
 **Observations for the pilot:** researchers fetched 4-5 sources each against a target of 3 (acceptable, "more is fine"); one verifier batch of 8 claims cost as much as both researchers together, which supports the fetch ≥ verify budget rule; CDX answered differently for the same URL minutes apart (no captures, then a capture), so `refetch` before concluding.
 **Next:** Phase 2 pilot (REQ 4): 12-15 questions across five domains, our skill vs built-in `/deep-research`, Sonnet generator, Opus judge, rubric protocol from `evaluation-survey.md`. Keep eval questions/rubrics in `eval/private/`.
+
+## 2026-09-03 #32 — Three design changes adopted before the pilot (user: "go with recommendation")
+**Asked:** what should change in the design after the smoke test. **Recommended and adopted:**
+1. **Tiered verification.** Evidence: one corroboration batch of 8 claims cost 130k tokens vs 84-94k per researcher (#31); at `standard` depth "all central + supporting" would have put ~1M tokens into adjudication, inverting R3. Now: central claims are corroborated with independent search; the next tier is quote-checked in context only (`claim checked --note "quote-check: …"`, stays `single-source`); tangential claims are not verified except at `deep`. Preset table updated in SKILL.md and DESIGN.md; `prompts/verifier.md` gained a second list.
+2. **Atomic claims.** Researchers wrote 40-60-word compound claims (#31), hard to corroborate and mismatched to atomic rubric items. Rule in `prompts/researcher.md`: one fact per claim, ≤25 words, split compounds, quotes may be shared.
+3. **Model-free citation tracing.** The smoke writer cited [14] for a decaf finding that [14] does not support (EVAL: unsupported citations are the dominant error). The writer now ends each cited sentence/table row with `<!-- cNNN -->`; `cite_check.py` checks every `[n]` in that segment against the named claims' own source ∪ supports ∪ contradicts (`citation-not-traced` error; `unknown-claim-id` error; `citation-without-claim-marker` warning). Contract §7 2b; unit test added (3/3 pass).
+**Left for the pilot to measure (unchanged):** `unverified` default, fetch ≥ verify budget split, second evidence-seeded round.
+**Next:** Stage A of Phase 2: write the private question set and rubrics in `eval/private/` (gitignored), then a 5-question cost probe at `standard` depth before the full pilot.

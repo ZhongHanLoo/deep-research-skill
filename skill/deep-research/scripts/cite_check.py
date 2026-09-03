@@ -9,6 +9,11 @@
 2. Citation integrity in report.md: every [n] must exist; no literal URL
    outside the registry; unfetchable / possibly-fabricated sources cited only
    with a caveat; contradicted claims cited with a caveat.
+2b. Citation tracing: the writer ends each cited sentence (or table row) with
+   an HTML comment naming the claim ids it rests on, e.g. `<!-- c004 c014 -->`.
+   Every [n] in that segment must be one of those claims' own source or a
+   registered supporting/contradicting source; anything else is an error
+   (`citation-not-traced`). Cited segments without a marker are warnings.
 3. URL health for every source that is ok or cited: LIVE / DEAD /
    ARCHIVED-ONLY / POSSIBLY-FABRICATED (HEAD -> GET -> Wayback CDX -> DNS).
 4. Writes quote_verified, labels, health back through the ledger lock and
@@ -35,6 +40,7 @@ CAVEAT_WEAK = re.compile(r"snippet|could not be fetched|unfetchable|not fetched|
 CITE_RE = re.compile(r"\[(\d+(?:\s*[-–]\s*\d+)?(?:\s*,\s*\d+(?:\s*[-–]\s*\d+)?)*)\](?!\()")
 URL_RE = re.compile(r"https?://[^\s<>\"')\]]+")
 FENCE_RE = re.compile(r"```.*?```", re.S)
+MARKER_RE = re.compile(r"<!--\s*((?:c\d{3,}\s*)+)-->")
 
 
 def expand_cites(group: str) -> list[int]:
@@ -98,7 +104,7 @@ def check_quotes(run: ledger.Run, problems: list) -> dict:
 
 def check_report(run: ledger.Run, problems: list) -> dict:
     rp = run.path / "report.md"
-    stats = {"report": rp.exists(), "citations": 0, "unknown": 0, "cited": []}
+    stats = {"report": rp.exists(), "citations": 0, "unknown": 0, "cited": [], "tracing": {}}
     if not rp.exists():
         problems.append({"kind": "report-missing", "severity": "warning", "message": "report.md not found; citation checks skipped", "hint": "run the writer first"})
         return stats
@@ -143,12 +149,57 @@ def check_report(run: ledger.Run, problems: list) -> dict:
             problems.append({"kind": "cites-unfetchable-source", "severity": sev, "n": n, "message": f"[{n}] was not fetched ({s.get('status')}, {s.get('evidence_strength')}) but is cited", "hint": "say in the same paragraph that only a search snippet was available, or drop the citation"})
         elif s.get("evidence_strength") == "archived":
             problems.append({"kind": "archived-only", "severity": "info", "n": n, "message": f"[{n}] is an archived copy ({s.get('snapshot_date')})", "hint": "cite as an archived snapshot"})
+    stats["tracing"] = check_tracing(body, claims, sources, problems)
     contradicted_sources = {c["source"] for c in claims if c["label"] == "contradicted"}
     for n in sorted(contradicted_sources & cited):
         for p in paras:
             if any(n in expand_cites(g) for g in CITE_RE.findall(p)) and not CAVEAT_CONTRADICTED.search(p):
                 problems.append({"kind": "contradicted-cited-without-caveat", "severity": "warning", "n": n, "message": f"[{n}] backs a contradicted claim and is cited without 'contradicted/disputed' in the paragraph: \"{p[:80]}…\"", "hint": "state the disagreement where the claim is used, or move it to the disagreements section"})
                 break
+    return stats
+
+
+def check_tracing(body: str, claims: list, sources: dict, problems: list) -> dict:
+    """Segment each paragraph at claim-id markers and check that the citations in
+    a segment are backed by the claims named in the marker that closes it."""
+    by_id = {c["id"]: c for c in claims}
+    stats = {"markers": 0, "traced": 0, "untraced": 0, "unmarked_segments": 0, "unknown_claim_ids": 0}
+    for para in paragraphs(body):
+        pos = 0
+        for m in MARKER_RE.finditer(para):
+            stats["markers"] += 1
+            segment = para[pos:m.start()]
+            pos = m.end()
+            ids = m.group(1).split()
+            allowed: set[int] = set()
+            for cid in ids:
+                c = by_id.get(cid)
+                if not c:
+                    stats["unknown_claim_ids"] += 1
+                    problems.append({"kind": "unknown-claim-id", "severity": "error", "claim": cid,
+                                     "message": f"marker names {cid}, which is not in claims.json", "hint": "use ids from the claim list given to the writer"})
+                    continue
+                allowed.add(c["source"])
+                allowed |= {e["source"] for e in c.get("supports", [])} | {e["source"] for e in c.get("contradicts", [])}
+            if not allowed:
+                continue  # marker had no valid ids; already reported as unknown-claim-id
+            for grp in CITE_RE.findall(segment):
+                for n in expand_cites(grp):
+                    if n not in sources:
+                        continue
+                    if n in allowed:
+                        stats["traced"] += 1
+                    else:
+                        stats["untraced"] += 1
+                        problems.append({"kind": "citation-not-traced", "severity": "error", "n": n, "claim": " ".join(ids),
+                                         "message": f"[{n}] is cited in a segment attributed to {' '.join(ids)}, but none of those claims rests on [{n}]",
+                                         "hint": f"cite only the sources of the claims the sentence uses, or add the claim that [{n}] supports: \"{segment.strip()[:90]}…\""})
+        tail = para[pos:]
+        if CITE_RE.search(tail) and not tail.lstrip().startswith("|---"):
+            stats["unmarked_segments"] += 1
+            problems.append({"kind": "citation-without-claim-marker", "severity": "warning",
+                             "message": f"cited text has no claim marker: \"{tail.strip()[:90]}…\"",
+                             "hint": "end each cited sentence or table row with <!-- cNNN … --> naming the claims it uses"})
     return stats
 
 
@@ -220,7 +271,7 @@ def main(argv=None) -> int:
     order = {"error": 0, "warning": 1, "info": 2}
     problems.sort(key=lambda p: (order.get(p["severity"], 3), str(p.get("n", "")), p.get("kind", "")))
     errors = [p for p in problems if p["severity"] == "error" or (a.strict and p["severity"] == "warning")]
-    summary = {"quotes": q, "report": {"found": r["report"], "citations": r["citations"], "unknown": r["unknown"], "distinct_sources_cited": len(r["cited"])},
+    summary = {"quotes": q, "report": {"found": r["report"], "citations": r["citations"], "unknown": r["unknown"], "distinct_sources_cited": len(r["cited"]), "tracing": r.get("tracing", {})},
                "health": h, "problems": problems, "errors": len(errors)}
     if a.format == "json":
         print(json.dumps(summary, ensure_ascii=False, indent=2))
@@ -228,6 +279,9 @@ def main(argv=None) -> int:
         print("# Citation check")
         print(f"- Quotes: {q['checked']} checked, {q['verified']} verified, {q['failed']} failed, {q['unknown']} not checkable (source not quote_safe)")
         print(f"- Report: {'found' if r['report'] else 'missing'}; {r['citations']} citations to {len(r['cited'])} sources; {r['unknown']} unknown numbers")
+        t = r.get("tracing") or {}
+        if t:
+            print(f"- Tracing: {t.get('markers', 0)} claim markers; {t.get('traced', 0)} citations traced, {t.get('untraced', 0)} not traced, {t.get('unmarked_segments', 0)} cited segments without a marker")
         print(f"- Health: {h if h else 'skipped (--no-network)'}")
         print()
         print("## Problems" if problems else "## Problems: none")

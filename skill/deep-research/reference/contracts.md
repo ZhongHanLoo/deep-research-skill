@@ -142,7 +142,8 @@ Exit code 0 on `ok`, 1 on `unfetchable`/`possibly-fabricated`/`skipped-robots`, 
 }
 ```
 
-- `importance`: `central` | `supporting` | `tangential` (extractor's judgment relative to the research question).
+- `importance`: `central` | `supporting` | `tangential` (extractor's judgment relative to the research question). Claims are atomic: one fact, ≤25 words; several claims may share one quote.
+- `checked` with a note starting `quote-check:` means the claim was quote-checked only (no search); it stays `single-source`.
 - `supports` / `contradicts`: lists of `{"source": n, "note": "...", "by": "<agent label>"}` added by verifiers. Union semantics: two verifiers can add independently.
 - `checked`: true once any verifier has finished looking at the claim (set by `claim checked` or by any `claim evidence` call).
 - `quote_verified`: true | false | null (null when the source is not quote_safe, so no check is possible).
@@ -198,6 +199,7 @@ All subcommands: `ledger.py --run DIR <cmd> ...`; output JSON to stdout unless `
 
 1. **Quote containment**: for every claim whose source is `quote_safe`, run `textmatch.contains(quote, raw_text)`; set `quote_verified`; on false, force label `unverified` and add note `quote-not-in-source`. Report each failure with the claim id and the nearest matching passage (`textmatch.best_window`) so the writer/extractor can fix the quote.
 2. **Citation integrity in `report.md`**: every `[n]` (also ranges/lists like `[3, 5]` and `[3][5]`) must exist in `sources.json`; report unknown numbers. Report sources with `status != ok` that are cited (allowed only when the report marks them as archived/paraphrase). Report claims labelled `contradicted` whose source is cited without the word "contradicted" or "disputed" within the same paragraph (warning only). Report any URL appearing literally in `report.md` that is not in `sources.json` (fabricated-citation guard).
+2b. **Citation tracing**: the writer ends each cited sentence or table row with `<!-- cNNN [cMMM …] -->`. For each marker, the segment of the paragraph since the previous marker is checked: every `[n]` in it must be the own source of one named claim or a source in that claim's `supports`/`contradicts`; otherwise `citation-not-traced` (error). A marker naming an unknown id → `unknown-claim-id` (error). A cited segment with no marker → `citation-without-claim-marker` (warning). Added 2026-09-03 (decision in progress.md #32).
 3. **URL health** (skipped with `--no-network`): for each source with `status == ok` or cited in the report: HEAD (fallback GET, 15 s) → 2xx/3xx = `LIVE`; 4xx/5xx/timeout → CDX exact query; ≥1 capture → `ARCHIVED-ONLY`; no capture and DNS failure → `POSSIBLY-FABRICATED`; no capture otherwise → `DEAD`. Sources whose `fetch_method` is already `wayback`/`commoncrawl` are `ARCHIVED-ONLY` unless HEAD is 2xx. Throttle archive.org ≥1 s.
 4. Writes results back to `sources.json`/`claims.json` (through ledger's lock) and re-renders `sources.md`/`verification.md`.
 5. Prints a summary: counts, then a bullet list of actionable problems. Exit 0 when no problems, 1 when there are.

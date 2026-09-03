@@ -25,9 +25,9 @@ Scripts live next to this file in `scripts/` (Python 3.10+ stdlib + `curl`; no k
 
 | Preset | Angles (round 1) | Max rounds | Sources per angle per round | Verify | Length target (report mode) |
 |---|---|---|---|---|---|
-| quick | 2-3 | 1 | 3 | central claims, max 8 | 300-600 words |
-| standard | 3-5 | 2 | 4 | all central + supporting claims | 800-1500 words |
-| deep | 5-6 | 3 | 6 | all claims; two independent verifiers per batch | 1500-3000 words, ceiling 3500 |
+| quick | 2-3 | 1 | 3 | corroborate ≤8 central claims; quote-check the rest of the central claims | 300-600 words |
+| standard | 3-5 | 2 | 4 | corroborate all central claims; quote-check supporting claims | 800-1500 words |
+| deep | 5-6 | 3 | 6 | corroborate central + supporting, two independent verifiers per batch; quote-check tangential | 1500-3000 words, ceiling 3500 |
 
 Effort rule: a single fact → `quick` with 1 agent; a comparison → 2-4 angles; open-ended or multi-part → 5+.
 
@@ -59,8 +59,11 @@ python3 S/ledger.py --run <run> state --format md
 ```
 Read the state plus the `Gaps` sections of `angles/*.md`. Write round-r angles (new sub-questions, seeded by evidence; drop angles that saturated) as an appendix to `00-brief.md`, then run researchers again with `--round r`. **Stop** when the preset's max rounds is reached, or when the last round added no new *central* claim (state shows per-round central counts) — for `deep`, after two such rounds.
 
-### 5. Corroborate
-Select claims per preset (`S/ledger.py claims list --unchecked --importance central --format md`, add `supporting` for standard, everything for deep). Split into batches of ≤8 claims. Run one **verifier** per batch with `prompts/verifier.md` (deep: two verifiers per batch, independently; the ledger merges their evidence). Verifiers search for corroborating *and* contradicting evidence, fetch with `add-url`, and record with `claim evidence` / `claim checked`. They never set labels; the ledger derives them. Fetch pool must stay ≥ verifier pool: never launch more verifiers than researchers ran.
+### 5. Verify (two tiers)
+Verification is tiered so that reading keeps more budget than adjudicating (one corroboration batch of 8 claims costs about as much as a researcher):
+- **Corroborate** (search for independent supporting and contradicting evidence): the claims the preset table names, in batches of ≤8 (`S/ledger.py claims list --unchecked --importance central --format md`).
+- **Quote-check** (no searching; does the quote support the claim as written?): the next importance tier, in batches of ≤20, appended to the same verifier prompts under "Claims to quote-check only".
+Run one **verifier** per batch with `prompts/verifier.md` (deep: two verifiers per corroboration batch, independently; the ledger merges their evidence). Verifiers record with `claim evidence` / `claim checked` and never set labels; the ledger derives them. Never launch more verifiers than researchers ran.
 
 ### 6. Synthesize
 One **writer** with `prompts/writer.md`. Inputs: `00-brief.md`, `S/ledger.py claims list --format md` (all labels), `sources.md` (run `S/ledger.py render` first). The writer never reads raw pages and never invents `[n]`. Structure: exec summary → key-findings table → body with `[n]` → disagreements → what this could not find → methodology → sources. Length per preset; `brief` mode = the summary and findings table only.
@@ -69,7 +72,7 @@ One **writer** with `prompts/writer.md`. Inputs: `00-brief.md`, `S/ledger.py cla
 ```
 python3 S/cite_check.py --run <run>
 ```
-Fix every `error` it reports: wrong quotes (re-copy from `raw/<n>.txt` or drop the claim), unknown `[n]`, literal URLs not in the registry, possibly-fabricated sources cited. Re-run until it exits 0. If a fix needs new evidence, that is a sub-question: run one more researcher, not a rewrite from memory.
+Fix every `error` it reports: wrong quotes (re-copy from `raw/<n>.txt` or drop the claim), unknown `[n]`, literal URLs not in the registry, possibly-fabricated sources cited, and **citations not traced to a claim** (the writer marks each cited sentence with `<!-- cNNN -->`; a `[n]` that none of the named claims rests on is rejected). Re-run until it exits 0. If a fix needs new evidence, that is a sub-question: run one more researcher, not a rewrite from memory.
 
 ### 8. Finalize
 ```
@@ -79,7 +82,8 @@ Tell the user the run folder path and the report's summary lines.
 
 ## Rules (the ones that move the metrics)
 - Quotes come from `raw/<n>.txt` only. Never from search snippets, never from a harness fetch summary. If a page could not be fetched, register the pointer with `add-snippet` and never quote it.
-- `[n]` numbers come only from the ledger. No URL appears in `report.md` outside `sources.md`'s numbering.
+- `[n]` numbers come only from the ledger, and every cited sentence names the claims it rests on. No URL appears in `report.md` outside `sources.md`'s numbering.
+- Claims are atomic: one fact, ≤25 words.
 - Uncertainty is labelled `unverified`, never silently dropped and never marked `contradicted` without a contradicting source `[n]`.
 - Contradicted claims stay in `verification.md` and are mentioned in the report's disagreements section.
 - No rewrite without new retrieval. Every revision pass is attached to a new search.

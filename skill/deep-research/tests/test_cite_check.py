@@ -78,8 +78,28 @@ class CiteCheckTest(unittest.TestCase):
         self.assertEqual(by["c004"]["label"], "contradicted")
         self.assertTrue((self.d / "sources.md").exists() and (self.d / "verification.md").exists())
 
+    def test_tracing(self):
+        (self.d / "report.md").write_text(
+            "# R\n\nMarket size is large [1]. <!-- c001 -->\n\n"
+            "Cross-cited [1][3]. <!-- c001 -->\n\n"          # [3] not a source of c001 -> error
+            "Contradiction noted, disputed by [3]. <!-- c004 -->\n\n"  # c004 contradicts [3] -> allowed
+            "Unknown id [1]. <!-- c999 -->\n\n"
+            "No marker here [2].\n\n"
+            "| # | Finding | Sources |\n|---|---|---|\n| 1 | x | [1] <!-- c001 --> |\n| 2 | y | [2] <!-- c001 --> |\n\n"
+            "## Sources\n[1] https://a.com/x\n[2] https://b.org/y\n[3] https://c.net/z\n")
+        code, out = self.run_cc()
+        kinds = [(p["kind"], p.get("n")) for p in out["problems"]]
+        self.assertIn(("citation-not-traced", 3), kinds)
+        self.assertIn(("citation-not-traced", 2), kinds)   # table row 2 cites [2] under c001
+        self.assertIn(("unknown-claim-id", None), kinds)
+        self.assertIn(("citation-without-claim-marker", None), kinds)
+        self.assertFalse(any(k == "citation-not-traced" and n == 1 for k, n in kinds))
+        t = out["report"]["tracing"]
+        self.assertEqual(t["markers"], 6)
+        self.assertEqual(t["unmarked_segments"], 1)
+
     def test_strict(self):
-        (self.d / "report.md").write_text("# R\n\nOnly [1] here.\n\n## Sources\n[1] https://a.com/x\n")
+        (self.d / "report.md").write_text("# R\n\nOnly [1] here. <!-- c001 -->\n\n## Sources\n[1] https://a.com/x\n")
         (self.d / "claims.json").write_text(json.dumps({"next_id": 2, "claims": [claim("c001", 1, "reached USD 4.2 billion in 2024")]}))
         code, out = self.run_cc()
         self.assertEqual(code, 0)
