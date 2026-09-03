@@ -1,4 +1,4 @@
-# deep-research skill — v1 design (draft, 2026-09-02)
+# deep-research skill — v1 design (draft 2026-09-02; implementation notes 2026-09-03)
 
 Targets, in order: **fact recall**, **citation support**, then presentation. Every choice below cites its evidence: `R#` = recommendation in `research/literature/architecture-survey.md`; `OUT` = output-formats survey; `EVAL` = evaluation survey; `FETCH` = fetch-reliability survey; `REQ` = `REQUIREMENTS.md`.
 
@@ -57,13 +57,13 @@ research-runs/<YYYY-MM-DD>-<slug>/
 - `scripts/fetch.py <url>` — 9-step keyless chain (structured API by URL shape → harness fetch is *not* used here → raw HTTP with browser-like headers, HEAD first, robots.txt honoured → r.jina.ai (20 RPM) → urltomarkdown → Wayback CDX/id_ → Common Crawl → local PDF/HTML extraction → optional installed browser → UNFETCHABLE). Content plausibility gate (block-page markers, min length, title/URL consistency). Emits JSON: text path, method, status, snapshot_date, evidence_strength, quote_safe.
 - `scripts/ledger.py` — owns `sources.md` numbering and `claims.json` append/update (Hermes ledger idea: the model never invents `[n]`).
 - `scripts/cite_check.py` — quote containment (normalised whitespace/quotes/case, shingle fallback), URL health, Wayback fabrication check; rewrites labels; produces a summary for the writer.
-- `scripts/runmeta.py` — assembles `run.json`.
+- `run.json` is created by `ledger.py init` and completed by `ledger.py finalize` (the separate `runmeta.py` from the first draft was folded into the ledger, 2026-09-03).
 
 Harness-side fetch (Claude Code `WebFetch`) is used only as a *discovery* aid, never as the source of quotes (FETCH: 125-char quote cap, summary not page).
 
 ## 5. Portability
 
-- Core = `skill/deep-research/SKILL.md` (Agent Skills frontmatter) + `scripts/` + `prompts/` (one Markdown file per role: brief, searcher, extractor, verifier, writer). No Claude-only syntax in prompts.
+- Core = `skill/deep-research/SKILL.md` (Agent Skills frontmatter) + `scripts/` + `prompts/` (one Markdown file per role: brief, researcher [search + fetch + extract in one agent per angle, so pointers never leave the agent that fetches them], verifier, writer) + `reference/contracts.md` (binding file and CLI contracts). No Claude-only syntax in prompts.
 - Parallelism is expressed as "run these N role prompts, each with its angle, then continue"; Claude Code adapter maps this to subagents; a harness without subagents runs them sequentially.
 - Adapter notes live in `adapters/<harness>.md`; only Claude Code is tested (REQ 5).
 

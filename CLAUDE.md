@@ -23,7 +23,9 @@ All twelve gap questions are locked in `REQUIREMENTS.md` (2026-09-02). Read it b
 - `progress.md`: the chronological live log of everything we planned, researched, found, and decided. **Update it after every meaningful step, on your own, without being asked.** It is the recovery point after context compaction or a fresh session. Read it first at the start of any session.
 
 ## Working rules
-- **Subagents:** always launch Agent-tool subagents with `model: "opus"` (user preference, 2026-09-02). Do not let them inherit Fable.
+- **Subagents:** always launch Agent-tool subagents with `model: "opus"` (user preference, 2026-09-02). Do not let them inherit Fable. If Opus returns repeated `529 Overloaded` (six failures on 2026-09-03), do the work in the main session rather than burning retries; for deep-research smoke/pilot runs the generator is Sonnet per REQ 4.
+- **Scripts contract:** `skill/deep-research/reference/contracts.md` is binding for prompts, scripts and adapters; change it first, then the code. Tests: `skill/deep-research/tests/integration.sh` (live network) and `tests/test_cite_check.py` (offline).
+- **Shell:** the interactive shell is zsh; `echo ====` fails (`=cmd` expansion) and `$VAR` with spaces is not word-split. Put multi-step tests in a `bash` script file.
 - Start every session by reading `progress.md` (at least the "Current state" section at the top and the latest entries at the bottom).
 - Log to `progress.md` in chronological order: plan -> research conducted -> findings (with sources) -> decision and rationale. Convert relative dates to absolute (YYYY-MM-DD).
 - Every claim in the literature review must carry a source (URL, paper, repo, commit) so a future round can re-verify it.
@@ -44,7 +46,8 @@ research/
   prior-art/     # extracted/copied artifacts of existing systems (e.g. Claude Code built-in workflow script)
   literature/    # survey documents, each with dated source lists
 evidence/        # benchmark runs, transcripts, scoring rubrics, results
-skill/           # the portable deep-research skill (core, harness-agnostic)
-adapters/        # per-harness packaging (claude-code/, hermes/, codex/)
+skill/DESIGN.md  # v1 design with evidence tags
+skill/deep-research/   # the portable skill: SKILL.md, prompts/, scripts/{fetch,ledger,cite_check,textmatch}.py, reference/contracts.md, tests/
+adapters/        # per-harness notes (claude-code/ tested; hermes.md, codex.md untested)
 decisions/       # ADR-style decision records (optional; may fold into progress.md)
 ```

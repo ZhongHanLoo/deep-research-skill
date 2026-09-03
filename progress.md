@@ -4,10 +4,10 @@
 
 ## Current state (keep updated)
 - **Phase:** 1 — design v1 from literature. Requirements locked in `REQUIREMENTS.md` (2026-09-02).
-- **Last action:** Completed two literature surveys (`research/literature/output-formats-survey.md`, `research/literature/evaluation-survey.md`); presented revised Q2 output contract and Q3 evaluation recommendation to user.
-- **Next action:** User is reviewing `skill/DESIGN.md` (v1 design, entry #27) offline and will bring thoughts to the next session. Discuss, revise DESIGN.md if needed, then implement `skill/deep-research/` (SKILL.md, prompts/, scripts/fetch.py, ledger.py, cite_check.py, runmeta.py).
-- **Session log:** session 1 ended 2026-09-02 after entry #27. All work committed and pushed (HEAD 845d74e).
-- **Open questions:** none blocking; see Phase 1 plan in entry #25.
+- **Last action (2026-09-03, session 2):** implemented `skill/deep-research/` (SKILL.md, prompts, fetch/ledger/cite_check scripts, contracts, adapters, tests); scripts pass offline unit tests and a live integration test (entry #30).
+- **Next action:** smoke-test the whole workflow with model agents on 1-2 questions (generator Sonnet per REQ 4), fix what breaks, then start Phase 2 (pilot vs Claude Code built-in `/deep-research`). User has not yet given feedback on `skill/DESIGN.md`; v1 proceeds as drafted (entry #29).
+- **Session log:** session 1 ended 2026-09-02 after entry #27 (HEAD 7222c8e). Session 2 started 2026-09-03.
+- **Open questions:** user feedback on DESIGN.md (verification default, budget split) still welcome; both are preset/prompt parameters.
 
 ---
 
@@ -238,3 +238,47 @@ Written from REQUIREMENTS.md + the four surveys. Every phase and parameter carri
 
 ## 2026-09-02 #28 — Session 1 closed
 User paused to read `skill/DESIGN.md` and return with feedback. Points flagged for their attention: verification default (`unverified` vs built-in `refuted`) and budget allocation (fetch pool >= verifier pool). Nothing else pending. Repo clean and pushed.
+
+## 2026-09-03 #29 — Session 2 opened; implementation of `skill/deep-research/` started
+**Context:** user asked to continue; no feedback on `skill/DESIGN.md` was recorded, so v1 proceeds as drafted (the two flagged points, `unverified` default and fetch ≥ verify budget, are prompt/preset parameters and cheap to change later).
+**Plan for the session:** (1) write binding contracts (`skill/deep-research/reference/contracts.md`: run folder, `sources.json`, `claims.json`, `run.json`, fetch record, CLI of each script, angle-note headings); (2) three Opus subagents in parallel for `scripts/fetch.py`, `scripts/ledger.py`, `scripts/cite_check.py`; (3) main agent writes `SKILL.md`, `prompts/{brief,researcher,verifier,writer}.md`, `adapters/claude-code/README.md`; (4) integration test of the scripts on live URLs; (5) smoke test of the whole workflow.
+**Decisions made while implementing (deviations from DESIGN.md, now recorded there):**
+- `searcher.md` + `extractor.md` merged into one `researcher.md`: the same agent searches, fetches and extracts for its angle, so pointers never cross an agent boundary (DESIGN phase 3 already allowed this).
+- `runmeta.py` folded into `ledger.py init/finalize`.
+- Claim labels are **derived** by the ledger from registered evidence (`contradicts` non-empty → contradicted; ≥2 distinct registrable domains among original+supports → corroborated; checked but nothing found → single-source; else unverified). Verifiers register evidence, never labels; two independent verifiers therefore merge naturally at `deep` preset.
+- `ledger.py claim add` rejects a quote that is not contained in `raw/<n>.txt` (normalised exact match, or ≥80% of word 6-gram shingles for quotes ≥8 words) at write time, so bad quotes are fixed by the agent that has the page open, not discovered at the end. `cite_check.py` re-checks everything at the end.
+- Sources that could not be fetched are still registered (`add-snippet`, `evidence_strength: paraphrase-only`, `quote_safe: false`) so the report can list them as weak evidence; the writer must caveat them.
+- Shared `scripts/textmatch.py` (normalise, contains, best_window) written and unit-tested by the main agent.
+
+## 2026-09-03 #30 — Skill implemented: `skill/deep-research/` (scripts, prompts, SKILL.md, adapters); tests pass
+**Process note:** all three Opus subagents (fetch.py, ledger.py, cite_check.py) were terminated by API `529 Overloaded`, twice each (six failures, ~15:15-15:40 BST). Rather than keep retrying, the main agent wrote the three scripts itself against the contracts. Recorded in CLAUDE.md as a working rule.
+**Delivered (all Python 3.10 stdlib + curl, no keys):**
+- `scripts/fetch.py` (~750 lines): the nine-rung chain from `fetch-reliability-survey.md` §4 with the seven-check plausibility gate, robots.txt honoured, cross-process 1 s throttle for archive.org, PDF via `pdftotext`/`pypdf`, Crossref/arXiv/Wikipedia/GitHub/docs-`.md` keyless APIs, Jina, urltomarkdown, Wayback CDX + `id_`, Common Crawl WARC range fetch, `agent-browser` if installed, fabrication check.
+- `scripts/ledger.py` (~700 lines): run folder init, `[n]` numbering with URL de-dup, quote check at claim-add time (exit 3 with nearest passage), evidence registration with **derived** labels, `state` for the compact working state (R2), renderers for `sources.md`/`verification.md`, `finalize` → `run.json`, O_EXCL lock + atomic writes (20 concurrent writers: no lost claim).
+- `scripts/cite_check.py` (~250 lines): quote containment, `[n]`/range/list citation parsing outside code fences, literal-URL guard, unfetchable/possibly-fabricated/contradicted-without-caveat checks, URL health (HEAD→GET→CDX→DNS), write-back and re-render; exit 1 on errors.
+- `scripts/textmatch.py`: normalisation + exact/shingle containment (≥80% of word 6-grams for quotes ≥8 words).
+- `SKILL.md` (~1050 words), `prompts/{brief,researcher,verifier,writer}.md`, `reference/contracts.md`, `adapters/{claude-code/README.md,hermes.md,codex.md}`, `tests/{integration.sh,test_cite_check.py}`.
+**Live test results (2026-09-03, sequential after fixes):**
+| URL | result |
+|---|---|
+| arxiv.org/abs/1706.03762 | ok, keyless-api (export API + ar5iv), 40.8k chars, published 2017-06-12 |
+| en.wikipedia.org/wiki/Transformer_(…) | ok, keyless-api (REST HTML), 110k chars |
+| news.ycombinator.com | ok, raw-http, 3.9k |
+| doi.org/10.1038/s41586-020-2649-2 | Nature "Client Challenge" block page caught by gate; Jina `AbuseAlleviationError`; no archive; **abstract-only** via Crossref (1.3k chars) |
+| reuters.com/technology/ | robots.txt disallows raw fetch; Jina blocked; Wayback snapshot `failed:js-empty` → `skipped-robots` (no false ok) |
+| blog.golang.org/go1.11 (soft-404) | raw-http 200 but `failed:length`; **Jina 200** 9.4k chars |
+| nytimes.com/…/openai-gpt4-chatgpt.html (real, paywalled) | raw 403; Jina blocked; **Wayback snapshot 2026-02-01**, 11.3k chars, evidence `archived` |
+| nytimes.com/…/qzx-fake-article-9182.html (fabricated) | 403 everywhere; CDX 0 captures → `unfetchable`, `no-captures-host-archived (http 403; paywall or bot wall as likely as fabrication)` |
+| nonexistent-domain-qzx9182.com/paper | `possibly-fabricated`, `dns-failure` |
+| arxiv.org/abs/2410.99999 (fabricated id) | 404 → proxy rungs skipped → `possibly-fabricated`, `no-captures-parent-has-captures` |
+| arxiv.org/pdf/1706.03762 | ok, raw-http, pdftotext, 39.9k |
+| code.claude.com/docs/en/skills | ok, keyless-api (`.md` sibling), 99k |
+**Findings that changed the code (and the contract):**
+1. **Jina's Cloudflare front returns 403 to a browser User-Agent sent from a non-browser TLS client** but 200 to an honest tool UA. All service rungs (Jina, urltomarkdown, archive.org, Crossref, arXiv, Wikipedia, Common Crawl) now identify as `deep-research-skill/1.0 (+repo; mailto)`; browser-like headers remain only for direct page reads (survey §2.4 evidence).
+2. **CDX `matchType=prefix` now answers `403 This type of CDX query requires authorization`** for at least nytimes.com (it still worked for arxiv.org). Fabrication check falls back to a host-root exact query and only concludes `possibly-fabricated` on DNS failure, on a prefix result, or when the live site said 404/410; a 403 with no captures stays `unfetchable`. Contract §3 step 9 updated.
+3. **Reader proxies re-render 404 pages as 200** (fake arXiv id passed the gate via Jina). After a live 404/410 the proxy rungs are skipped.
+4. **Block-page markers extended** with `just a moment...`, `client challenge`, `a required part of this site couldn't load`, `are you a robot`, `verify you are human`, `javascript is disabled in your browser`, `please enable cookies`; the page `<title>` is checked too (Nature's 209-char challenge page had passed the length floor).
+5. urltomarkdown returned 502/504 on most calls (one 200); kept as best-effort.
+6. Parallel processes each throttling archive.org independently caused CDX errors in the first parallel test; the throttle is now a shared mtime stamp in the temp dir.
+**Test evidence:** `tests/test_cite_check.py` 2/2 pass (offline: shingle-tolerant quote, paraphrase failure → forced `unverified`, range/list citations, code-fence exclusion, literal URL guard, contradicted-without-caveat, caveated snippet source). `tests/integration.sh` (live) passes end to end: init → add-url ×4 (dedup, unfetchable, snippet) → grade → claim add (accept / reject exit 3) → evidence → corroborated label → render → cite_check (reports the deliberate errors, exit 1) → finalize with health LIVE ×2.
+**Next:** smoke-test the full workflow with model agents (generator Sonnet per REQ 4) on 1-2 questions; then Phase 2 pilot.
