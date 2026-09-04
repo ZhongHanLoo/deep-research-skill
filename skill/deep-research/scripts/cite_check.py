@@ -15,7 +15,8 @@
    registered supporting/contradicting source; anything else is an error
    (`citation-not-traced`). Cited segments without a marker are warnings.
 3. URL health for every source that is ok or cited: LIVE / DEAD /
-   ARCHIVED-ONLY / POSSIBLY-FABRICATED (HEAD -> GET -> Wayback CDX -> DNS).
+   ARCHIVED-ONLY / POSSIBLY-FABRICATED / UNKNOWN (HEAD -> GET -> Wayback CDX -> DNS;
+   UNKNOWN when the CDX lookup itself fails).
 4. Writes quote_verified, labels, health back through the ledger lock and
    re-renders sources.md and verification.md.
 Exit 0 when no error-severity problem remains, else 1 (--strict: warnings too).
@@ -25,6 +26,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import time
 import re
 import sys
 from concurrent.futures import ThreadPoolExecutor
@@ -37,7 +39,9 @@ import textmatch  # noqa: E402
 
 CAVEAT_CONTRADICTED = re.compile(r"contradict|disput|conflict|contested", re.I)
 CAVEAT_WEAK = re.compile(r"snippet|could not be fetched|unfetchable|not fetched|search result only|paraphrase|archived snapshot|archive", re.I)
-CITE_RE = re.compile(r"\[(\d+(?:\s*[-–]\s*\d+)?(?:\s*,\s*\d+(?:\s*[-–]\s*\d+)?)*)\](?!\()")
+# A bracketed 4-digit year followed by a law-report or court abbreviation ("[2011] UKSC 28",
+# "[1969] 2 AC 147") is a legal citation, not a source number (added 2026-09-04).
+CITE_RE = re.compile(r"\[(?!(?:1[89]\d\d|20\d\d)\]\s+(?:\d\s+)?[A-Z])(\d+(?:\s*[-–]\s*\d+)?(?:\s*,\s*\d+(?:\s*[-–]\s*\d+)?)*)\](?!\()")
 URL_RE = re.compile(r"https?://[^\s<>\"')\]]+")
 FENCE_RE = re.compile(r"```.*?```", re.S)
 MARKER_RE = re.compile(r"<!--\s*((?:c\d{3,}\s*)+)-->")
@@ -238,8 +242,13 @@ def health_of(src: dict, timeout: float) -> str:
     if r.err == "dns-failure":
         return "POSSIBLY-FABRICATED"
     rows = fetch.cdx_query(url, timeout, limit="1", status_200=False)
+    if rows is None:
+        time.sleep(2.0)
+        rows = fetch.cdx_query(url, timeout, limit="1", status_200=False)
     if rows:
         return "ARCHIVED-ONLY"
+    if rows is None and not (src.get("fetch_method") in ("wayback", "commoncrawl")):
+        return "UNKNOWN"  # archive lookup failed (rate limit or outage); do not call it dead
     if src.get("fetch_method") in ("wayback", "commoncrawl"):
         return "ARCHIVED-ONLY"
     if not fetch.dns_resolves(url):
@@ -266,6 +275,8 @@ def check_health(run: ledger.Run, cited: list[int], problems: list, timeout: flo
         counts[h] = counts.get(h, 0) + 1
         if h == "DEAD":
             problems.append({"kind": "dead-url", "severity": "warning", "n": n, "message": f"[{n}] does not resolve now and has no archive capture", "hint": "keep the citation only if the text was fetched live during the run (status ok); say so in methodology"})
+        elif h == "UNKNOWN":
+            problems.append({"kind": "health-unknown", "severity": "warning", "n": n, "message": f"[{n}] not reachable now and the archive lookup failed (rate limit or outage)", "hint": "re-run cite_check later; the text was fetched during the run if status is ok"})
         elif h == "POSSIBLY-FABRICATED" and n in set(cited):
             problems.append({"kind": "possibly-fabricated-cited", "severity": "error", "n": n, "message": f"[{n}] host does not resolve", "hint": "remove the citation"})
     return counts
