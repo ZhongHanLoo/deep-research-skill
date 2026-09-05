@@ -16,6 +16,23 @@ Five "stable" questions (facts that do not change month to month), one per domai
 
 Mean compliance 0.95 (0.88, 0.96, 1.00, 0.897, 1.00). Citation checks inside the skill (`cite_check.py`): 778/778 verbatim quotes verified against fetched text across the five runs; 0 unknown citation numbers; every `[n]` in every report traced to a registered claim; URL health at check time 373 LIVE / 40 ARCHIVED-ONLY / 12 DEAD-now-but-fetched-live / 8 UNKNOWN.
 
+**Same-yardstick audit of the five skill reports** (`eval/cite_audit.py`, run 2026-09-05, network health at audit time; the audit parses the report's own source list, so it sees the report as a ledger-less reader would):
+
+| Question | URLs in report | URL valid | Flagged possibly-fabricated | Citing sentences | Sentence-shingle containment |
+|---|---|---|---|---|---|
+| technology-3 | 61 | 0.984 | 0 | 30 | 0.10 |
+| science-health-3 | 82 | 0.878 | 0 | 21 | 0.24 |
+| business-finance-3 | 116 | 0.931 | 4 | 116 | 0.25 |
+| policy-law-3 | 106 | 0.943 | 0 | 106 | 0.31 |
+| culture-history-3 | 64 | 0.938 | 1 | 64 | 0.15 |
+
+Every URL flagged here was fetched with status `ok` during its run (the run folders hold the text); the flags are bot walls and pages that have since moved, not invented citations. Per-question detail:
+- technology-3: dl.acm.org (unfetchable, HTTP 403)
+- science-health-3: academic.oup.com (unfetchable, HTTP 403); academic.oup.com (unfetchable, HTTP 403); jamanetwork.com (unfetchable, HTTP 403); jamanetwork.com (unfetchable, HTTP 403); jamanetwork.com (unfetchable, HTTP 403); jamanetwork.com (unfetchable, HTTP 403); jamanetwork.com (unfetchable, HTTP 403); jamanetwork.com (unfetchable, HTTP 403); pmc.ncbi.nlm.nih.gov (unfetchable, HTTP 200); www.ebi.ac.uk (unfetchable, HTTP 404)
+- business-finance-3: www.congress.gov (unfetchable, HTTP 403); www.congress.gov (unfetchable, HTTP 403); www.finra.org (unfetchable, HTTP 403); www.finra.org (unfetchable, HTTP 403); www.ftc.gov (possibly-fabricated, HTTP 404); www.investor.gov (possibly-fabricated, HTTP 404); www.investor.gov (possibly-fabricated, HTTP 404); www.sipc.org (possibly-fabricated, HTTP 404)
+- policy-law-3: decisions.scc-csc.ca (unfetchable, HTTP 404); policyintegrity.org (unfetchable, HTTP 403); www.canlii.org (skipped-robots, HTTP None); www.canlii.org (skipped-robots, HTTP None); www.casemine.com (unfetchable, HTTP 200); www.mondaq.com (unfetchable, HTTP None)
+- culture-history-3: research.britishmuseum.org (possibly-fabricated, HTTP 404); www.ancient-origins.net (unfetchable, HTTP 403); www.athenapub.com (unfetchable, HTTP None); www.sciencedirect.com (skipped-robots, HTTP None)
+
 **Misses.** Four rubric items failed in total and all four were recall failures at the search/extraction stage (a rule in a spec section the researcher had fetched; a companion recommendation on the same guideline page; a sentence adjacent to the passage a researcher extracted from a judgment). None was a writing failure once the coverage pass existed: every fact that was in the claim ledger and wanted by a rubric was recovered.
 
 **Changes made during Stage B, with the measured effect** (details and dates in `progress.md` #35-#39):
