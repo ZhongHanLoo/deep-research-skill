@@ -25,7 +25,16 @@ sys.path.insert(0, str(ROOT / "skill" / "deep-research" / "scripts"))
 import fetch  # noqa: E402
 import textmatch  # noqa: E402
 
-URL_RE = re.compile(r"https?://[^\s<>\"')\]]+")
+URL_RE = re.compile(r"https?://[^\s<>\"'\]]+")
+
+
+def clean_url(u: str) -> str:
+    """Strip trailing punctuation and an unbalanced closing parenthesis (added 2026-09-05:
+    Wikipedia titles like Capitulation_of_Alexandria_(1801) were truncated at the ')')."""
+    u = u.rstrip(".,;:!?")
+    while u.endswith(")") and u.count(")") > u.count("("):
+        u = u[:-1]
+    return u
 MDLINK_RE = re.compile(r"\[([^\]]*)\]\((https?://[^)\s]+)\)")
 NUMREF_RE = re.compile(r"^\s*\[?(\d+)\]?[.:)]?\s+.*?(https?://\S+)", re.M)
 QUOTE_RE = re.compile(r"[\"“]([^\"”]{20,400})[\"”]")
@@ -49,15 +58,15 @@ def main() -> int:
     ap.add_argument("--timeout", type=float, default=15.0)
     a = ap.parse_args()
     text = Path(a.report).read_text(encoding="utf-8", errors="replace")
-    numref = {int(n): u.rstrip(".,;)") for n, u in NUMREF_RE.findall(text)}
-    urls = {u.rstrip(".,;)") for u in URL_RE.findall(text)} | set(numref.values())
+    numref = {int(n): clean_url(u) for n, u in NUMREF_RE.findall(text)}
+    urls = {clean_url(u) for u in URL_RE.findall(text)} | set(numref.values())
     urls |= {u for _, u in MDLINK_RE.findall(text)}
     # sentence -> cited urls
     citing: list[tuple[str, set[str]]] = []
     for s in sentences(text):
         if s.startswith("#") or re.match(r"^\[?\d+\]?[.:)]?\s+\S*https?://", s) or re.match(r"^\[\d+\]\s", s):
             continue  # headings and reference-list entries are not citing sentences
-        cited = {u.rstrip(".,;)") for u in URL_RE.findall(s)} | {u for _, u in MDLINK_RE.findall(s)}
+        cited = {clean_url(u) for u in URL_RE.findall(s)} | {u for _, u in MDLINK_RE.findall(s)}
         cited |= {numref[int(n)] for n in CITE_NUM_RE.findall(s) if int(n) in numref}
         if cited:
             citing.append((s, cited))
