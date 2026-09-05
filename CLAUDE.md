@@ -16,6 +16,7 @@ All twelve gap questions are locked in `REQUIREMENTS.md` (2026-09-02). Read it b
 - 2026-09-02: **Autonomy** = clarify only if underspecified; one plan checkpoint (angles, agent count, parallel/sequential); then fully autonomous; skip flag for batch runs.
 - 2026-09-02: **GitHub** = `ZhongHanLoo/deep-research-skill`, public, MIT, standalone (no skill dependencies); baselines described not redistributed; eval questions/rubrics private.
 - 2026-09-02: **Re-audit** = manual, user-triggered; no schedule. Repo must support a cold-start re-audit (dated sources, evidence, README how-to).
+- 2026-09-05: **Stage C closed at n=1.** The built-in `/deep-research` was run on one stable question (0.655 vs the skill's 1.00; 7.95M tokens over three attempts because a fresh run does not fit one subscription window). The user chose not to run the other four; the comparison is reported as n=1 plus the cost finding (`evidence/pilot-2026-09/README.md`). Next: apply the design changes queued in progress.md #38/#39/#41, then decide on a fuller pilot.
 - 2026-09-02: **Harness** = Claude Code only (build + test). Portability to other harnesses is a design constraint (Agent Skills standard `SKILL.md`, harness-agnostic core), not a test target.
 
 ## Files that must stay current
@@ -48,7 +49,7 @@ progress.md
 research/
   prior-art/     # extracted/copied artifacts of existing systems (e.g. Claude Code built-in workflow script)
   literature/    # survey documents, each with dated source lists
-evidence/        # benchmark runs, transcripts, scoring rubrics, results
+evidence/        # public results: smoke-runs/ (one full run folder), pilot-2026-09/README.md (Stage B and C results); questions/rubrics stay in eval/private/
 skill/DESIGN.md  # v1 design with evidence tags
 skill/deep-research/   # the portable skill: SKILL.md, prompts/, scripts/{fetch,ledger,cite_check,textmatch}.py, reference/contracts.md, tests/
 adapters/        # per-harness notes (claude-code/ tested; hermes.md, codex.md untested)

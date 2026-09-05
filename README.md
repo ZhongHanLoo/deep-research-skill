@@ -37,7 +37,7 @@ This is both the skill and the **evidence behind it**. Every design choice is tr
 - `skill/DESIGN.md` — the v1 design, every choice tagged with its evidence.
 - `skill/deep-research/` — the skill: `SKILL.md`, `prompts/` (role prompts), `scripts/` (fetch chain, ledger, citation check), `reference/contracts.md`, `tests/`.
 - `adapters/` — per-harness notes (Claude Code tested; Hermes and Codex untested).
-- `evidence/` — pilot evaluation results (to come; questions and rubrics stay private).
+- `evidence/` — pilot evaluation results: `evidence/smoke-runs/` (a complete `quick` run folder) and `evidence/pilot-2026-09/README.md` (Stage B results on five questions, the Stage C comparison with the Claude Code built-in `/deep-research`, costs, and what changed). Questions and rubrics stay private.
 
 ## License
 

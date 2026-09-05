@@ -91,6 +91,8 @@ Kept from the built-in: quoted falsifiable claims from fetched pages; structured
 4. Quote-containment failure rate of model-reported quotes.
 5. Whether fetch ≥ verify allocation raises rubric recall without hurting citation support.
 
+Measured in the September 2026 pilot: see `evidence/pilot-2026-09/README.md` (section "What the pilot measured against §7") and `progress.md` #35-#41. Headline: five-question mean compliance 0.95 at 1.5-2.6M Sonnet tokens per question; the built-in scored 0.655 on the one paired question at 7.95M tokens over three attempts; verification is half of every run and the central-claim count is the cost lever.
+
 ## 8. Not in v1
 
 Codebase/local-document research; paid search APIs; browser automation beyond an already-installed browser; non-English; mid-run human checkpoints; automated re-audit.
