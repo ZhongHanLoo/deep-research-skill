@@ -12,7 +12,7 @@ Contract: skill/deep-research/reference/contracts.md (sections 1, 2, 4, 5, 6).
   ledger.py --run DIR add-url URL [--angle A] [--round R] [--title T] [--ignore-robots] [--fresh]
   ledger.py --run DIR refetch N [--ignore-robots] [--fresh] [--keep-title]
   ledger.py --run DIR add-snippet URL --snippet TEXT [--angle A] [--title T]
-  ledger.py --run DIR grade N --grade G [--published DATE] [--publisher P]
+  ledger.py --run DIR grade N --grade G [--published DATE] [--publisher P]   (empty string clears a field)
   ledger.py --run DIR claim add --source N --angle A --text T --quote Q --importance I [--round R]
   ledger.py --run DIR claim add --from-json FILE [--round R]
   ledger.py --run DIR claim evidence ID (--supports N | --contradicts N) [--note TEXT] [--by LABEL]
@@ -537,10 +537,12 @@ def cmd_grade(args) -> None:
         if not row:
             die(f"no source [{args.n}]")
         row["grade"] = args.grade
-        if args.published:
-            row["published"] = args.published
-        if args.publisher:
-            row["publisher"] = args.publisher
+        # Omitted option: field untouched. Empty string: field cleared (null); the main
+        # agent's repair for a placeholder or wrong date (contracts.md section 5).
+        if args.published is not None:
+            row["published"] = args.published.strip() or None
+        if args.publisher is not None:
+            row["publisher"] = args.publisher.strip() or None
         run.save_sources(data)
     out({"n": row["n"], "grade": row["grade"], "published": row["published"], "publisher": row["publisher"]})
 

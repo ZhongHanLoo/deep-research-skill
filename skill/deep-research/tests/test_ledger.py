@@ -119,6 +119,26 @@ class LedgerTest(unittest.TestCase):
         self.assertFalse(res["claim"]["checked"])
         self.assertEqual(res["claim"]["label"], "unverified")
 
+    def test_grade_clear_published(self):
+        self.L(["add-url", "https://example.com/a", "--angle", "m"])
+        code, out, _ = self.L(["grade", "1", "--grade", "secondary", "--published", "2026-09-10", "--publisher", "Example"])
+        self.assertEqual(code, 0)
+        res = json.loads(out)
+        self.assertEqual((res["published"], res["publisher"]), ("2026-09-10", "Example"))
+        # omitted options keep their fields
+        res = json.loads(self.L(["grade", "1", "--grade", "primary"])[1])
+        self.assertEqual((res["grade"], res["published"], res["publisher"]), ("primary", "2026-09-10", "Example"))
+        # an empty string clears the field, the other field is untouched
+        code, out, _ = self.L(["grade", "1", "--grade", "primary", "--published", ""])
+        self.assertEqual(code, 0)
+        res = json.loads(out)
+        self.assertIsNone(res["published"])
+        self.assertEqual(res["publisher"], "Example")
+        res = json.loads(self.L(["grade", "1", "--grade", "primary", "--publisher", ""])[1])
+        self.assertIsNone(res["publisher"])
+        row = json.loads((self.run / "sources.json").read_text())["sources"][0]
+        self.assertIsNone(row["published"]); self.assertIsNone(row["publisher"]); self.assertEqual(row["grade"], "primary")
+
     def test_independence_and_labels(self):
         for u in ["https://example.com/a", "https://sub.example.com/b", "https://news.bbc.co.uk/c", "https://datatracker.ietf.org/doc/html/rfc9111", "https://www.rfc-editor.org/rfc/rfc9111"]:
             self.L(["add-url", u, "--angle", "m"])
