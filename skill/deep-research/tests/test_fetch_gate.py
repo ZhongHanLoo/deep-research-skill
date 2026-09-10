@@ -24,7 +24,17 @@ WILEY_WALL = ("Journal\n\nArticles\n\nActions\n\nTools\n\nFollow journal\n\nCook
               "Your password has been changed\n\nCreate a new account\n\nReturning user\n\nForgot your password?\n\nEnter your email address below.\n\nPlease check your email\n" * 2)
 
 
+ANUBIS_REJECT = ("![Image 1: Sad Anubis](https://www.bailii.org/.within.website/x/cmd/anubis/static/img/reject.webp?cacheBuster=v1.25.0)\n\n"
+                 "Internal Server Error: administrator has misconfigured Anubis. Please contact the administrator and ask them to look for the logs around: fast.\n\n"
+                 "```\nH4sIAAAAAAAA/wTA\nUQ7CMAgA0H9PQfbf\nZNOFdtwGEqwfBgZV\n```\n\n[Go home](https://www.bailii.org/)\n") * 2
+
+
 class GateTest(unittest.TestCase):
+    def test_anubis_reject_page_is_block_page(self):
+        self.assertGreaterEqual(len(ANUBIS_REJECT), fetch.MIN_CHARS)
+        self.assertEqual(fetch.gate(ANUBIS_REJECT, title="Oh noes!"), "failed:block-page")   # by title
+        self.assertEqual(fetch.gate(ANUBIS_REJECT), "failed:block-page")                    # by body
+
     def test_wiley_cookie_wall_is_consent_wall(self):
         self.assertGreaterEqual(len(WILEY_WALL), fetch.MIN_CHARS)
         self.assertEqual(fetch.gate(WILEY_WALL), "failed:consent-wall")

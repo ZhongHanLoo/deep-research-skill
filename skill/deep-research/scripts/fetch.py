@@ -65,7 +65,8 @@ BLOCK_MARKERS = ("attention required! | cloudflare", "sorry, you have been block
                  "a required part of this site couldn't load", "are you a robot", "verify you are human",
                  "javascript is disabled in your browser", "please enable cookies",
                  "performing security verification", "verifies you are not a bot",
-                 "security service to protect against malicious bots", "checking if the site connection is secure")
+                 "security service to protect against malicious bots", "checking if the site connection is secure",
+                 "oh noes!", "misconfigured anubis", "sad anubis")  # Anubis reject pages (BAILII, 2026-09-11)
 CONSENT_MARKERS = ("before you continue", "we use cookies and data", "manage your privacy settings", "accept all cookies",
                    "cookies are disabled for this browser", "requires cookies for authentication")  # the last two: Wiley Online Library, 2026-09-10
 

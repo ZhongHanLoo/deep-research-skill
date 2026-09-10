@@ -65,7 +65,7 @@ Concurrency: several agents append to `sources.json` and `claims.json` at the sa
 Field values:
 - `status`: `ok` | `unfetchable` | `possibly-fabricated` | `skipped-robots`
 - `fetch_method`: `keyless-api` | `raw-http` | `jina-reader` | `urltomarkdown` | `wayback` | `commoncrawl` | `local-extract` | `headless` | `search-snippet-only` | `none`
-- `gate`: `passed` | `failed:length` | `failed:block-page` | `failed:consent-wall` (short pages carrying a consent or cookie-requirement notice, including Wiley's "cookies are disabled for this browser" wall, 2026-09-10) | `failed:js-empty` | `failed:unextracted-pdf` | `failed:word-list` | `failed:binary` | `failed:nav-only` | `not-run`
+- `gate`: `passed` | `failed:length` | `failed:block-page` (bot-wall and challenge pages by title or opening text, including Anubis pages titled "Oh noes!" such as BAILII's, 2026-09-11) | `failed:consent-wall` (short pages carrying a consent or cookie-requirement notice, including Wiley's "cookies are disabled for this browser" wall, 2026-09-10) | `failed:js-empty` | `failed:unextracted-pdf` | `failed:word-list` | `failed:binary` | `failed:nav-only` | `not-run`
 - `robots`: `allowed` | `disallowed` | `not-checked`
 - `evidence_strength`: `primary` (live read of the page) | `archived` (Wayback/Common Crawl/Jina-cached snapshot; `snapshot_date` set) | `paraphrase-only` (only a search snippet or harness summary exists)
 - `quote_safe`: true only when `raw/<n>.txt` holds the page's own text (not a summary). Paraphrase-only sources are never quote_safe.
