@@ -103,7 +103,23 @@ def normalize_url(url: str) -> str:
         host = f"{host}:{p.port}"
     path = re.sub(r"/+$", "", p.path) or ""
     q = [(k, v) for k, v in parse_qsl(p.query, keep_blank_values=True) if not k.lower().startswith("utm_")]
+    host, path = _fold_mirror(url, host, path)
     return urlunsplit((p.scheme.lower() or "https", host, path, urlencode(q), ""))
+
+
+def _fold_mirror(url: str, host: str, path: str) -> tuple[str, str]:
+    """Known mirrors of one document share one identity key (the stored url is
+    untouched): any URL whose work key is an RFC number (rfc-editor, datatracker,
+    tools.ietf, httpwg, greenbytes, hjp.at; the same rule the independence check
+    uses) keys as rfc-editor.org/rfc/rfcN.html, and xx.m.wikipedia.org as
+    xx.wikipedia.org (contracts.md section 5, add-url; 2026-09-10)."""
+    wk = work_key(url)
+    if wk and wk.startswith("rfc:"):
+        return "rfc-editor.org", f"/rfc/rfc{int(wk[4:])}.html"
+    m = re.match(r"^([a-z\-]+)\.m\.wikipedia\.org$", host)
+    if m:
+        return f"{m.group(1)}.wikipedia.org", path
+    return host, path
 
 
 def host_of(url: str) -> str:

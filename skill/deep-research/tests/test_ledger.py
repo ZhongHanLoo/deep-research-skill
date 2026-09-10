@@ -39,6 +39,22 @@ class LedgerTest(unittest.TestCase):
         code, out, _ = self.add(1, "ok", "reached USD 4.2 billion in 2024", "central")
         self.assertEqual(code, 0)
 
+    def test_mirror_hosts_fold(self):
+        self.L(["add-url", "https://www.rfc-editor.org/rfc/rfc9111.html", "--angle", "m"])
+        for u in ["https://httpwg.org/specs/rfc9111.html", "https://datatracker.ietf.org/doc/html/rfc9111",
+                  "https://datatracker.ietf.org/doc/rfc9111/", "https://tools.ietf.org/html/rfc9111", "https://www.rfc-editor.org/rfc/rfc9111.txt", "https://www.rfc-editor.org/rfc/rfc9111",
+                  "https://greenbytes.de/tech/webdav/rfc9111.html", "https://www.ietf.org/rfc/rfc9111.txt"]:
+            code, out, _ = self.L(["add-url", u, "--angle", "m"])
+            self.assertIn('"duplicate": true', out, u)
+            self.assertIn('"n": 1', out, u)
+        code, out, _ = self.L(["add-url", "https://datatracker.ietf.org/doc/html/rfc9110", "--angle", "m"])
+        self.assertNotIn('"duplicate": true', out)  # a different RFC is a new source
+        self.L(["add-url", "https://en.wikipedia.org/wiki/HTTP", "--angle", "m"])
+        code, out, _ = self.L(["add-url", "https://en.m.wikipedia.org/wiki/HTTP", "--angle", "m"])
+        self.assertIn('"duplicate": true', out)
+        rows = json.loads((self.run / "sources.json").read_text())["sources"]
+        self.assertEqual(rows[0]["url"], "https://www.rfc-editor.org/rfc/rfc9111.html")  # stored as given
+
     def test_central_cap(self):
         self.L(["add-url", "https://example.com/a", "--angle", "m"])
         quotes = ["reached USD 4.2 billion in 2024", "Another sentence", "A third sentence about growth", "A fourth sentence about risk", "A fifth sentence about regulation", "A sixth sentence about history"]
@@ -140,7 +156,7 @@ class LedgerTest(unittest.TestCase):
         self.assertIsNone(row["published"]); self.assertIsNone(row["publisher"]); self.assertEqual(row["grade"], "primary")
 
     def test_independence_and_labels(self):
-        for u in ["https://example.com/a", "https://sub.example.com/b", "https://news.bbc.co.uk/c", "https://datatracker.ietf.org/doc/html/rfc9111", "https://www.rfc-editor.org/rfc/rfc9111"]:
+        for u in ["https://example.com/a", "https://sub.example.com/b", "https://news.bbc.co.uk/c", "https://pubmed.ncbi.nlm.nih.gov/12345678/", "https://europepmc.org/article/MED/12345678"]:
             self.L(["add-url", u, "--angle", "m"])
         self.add(1, "t", "reached USD 4.2 billion in 2024", "central")
         self.L(["claim", "evidence", "c001", "--supports", "2", "--note", "same domain", "--by", "v"])
@@ -150,7 +166,7 @@ class LedgerTest(unittest.TestCase):
         self.assertEqual(json.loads(self.L(["claims", "list"])[1])[0]["label"], "corroborated")
         self.add(4, "rfc fact", "reached USD 4.2 billion in 2024", "central")
         self.L(["claim", "evidence", "c002", "--supports", "5", "--note", "mirror", "--by", "v"])
-        self.assertEqual(json.loads(self.L(["claims", "list"])[1])[1]["label"], "single-source")  # mirror of same RFC
+        self.assertEqual(json.loads(self.L(["claims", "list"])[1])[1]["label"], "single-source")  # same PMID: one work, not independent
         self.L(["claim", "evidence", "c002", "--contradicts", "3", "--note", "x", "--by", "v"])
         self.assertEqual(json.loads(self.L(["claims", "list"])[1])[1]["label"], "contradicted")
 
