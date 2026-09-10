@@ -89,7 +89,7 @@ The other v1.1 changes behaved as designed in both runs: `--round` on every regi
 
 The sentence-shingle containment metric is weak for both workflows (prose paraphrases its source), which is why the skill also checks its verbatim quotes inside the ledger (778/778 in the pilot, 140/140 and 139/139 in the confirmation runs). It is reported because it is the protocol's step-5 metric and applies equally to a report with no ledger.
 
-## Fuller pilot, second and third domains: technology-3 and science-health-3 on skill v1.1, 2026-09-10 evening
+## Fuller pilot, second to fourth domains: technology-3, science-health-3 and policy-law-3 on skill v1.1, 2026-09-10 evening to 2026-09-11
 
 One `standard` run of technology-3 (HTTP caching semantics) with skill v1.1 plus the two post-tag edits of `progress.md` #44 (the writer prompt gives any presentation element the question asks for its own outline section; `grade --published ""` clears a wrong date). Round-1 brief copied verbatim from the 2026-09-03 run, so only the skill version changed; round 2 re-decomposed from the round-1 gaps (two angles: browser heuristics and bfcache, CDN stale handling and spec edges). The writer fill carried no operator line about presentation, on purpose (`progress.md` #45).
 
@@ -133,7 +133,27 @@ One `standard` run of science-health-3 (vitamin D, falls and fractures) with the
 
 Same final score at 24% lower cost, and the same single miss in both runs: the grade and population of the intervention a guideline body recommends instead of vitamin D, which sits on a page neither run fetched (both fetched pages refer to it in passing). Two things differed from the other domains: the first-pass score was lower because two rubric facts (a trial's dose arms; the alternative intervention) were in the ledger as `supporting` claims, which the writer's coverage list does not show (it lists unused central claims only), so one 36k coverage pass with no new retrieval lifted the score; and the writer's overshoot was +31%, back at the culture-history-3 level. The sequential mode cost no tokens and roughly 40 minutes of wall clock, and no agent was killed. Candidates recorded for the next change round: the coverage list should also name unused supporting claims that carry a number, a grade or a recommendation; the fetch gate should recognise Wiley's cookie wall (two "Cookies Turned Off" stubs were registered as `ok`); a guideline angle should fetch a companion statement that a fetched page names. The same-author rule again refused investigator press releases and co-authored commentaries as corroboration, which is why 74 claims stayed single-source: trial-specific figures often exist only in the investigators' own outputs.
 
-Across the three domains run on v1.1 (culture-history-3 three times, technology-3, science-health-3): compliance 0.92-1.00 for 1.6-2.0M Sonnet tokens per `standard` question, no agent killed in the evening runs, no fabricated URL, every quote verified at registration, and each remaining miss a fact on a page no angle fetched.
+### policy-law-3, after midnight
+
+One `standard` run of policy-law-3 (judicial deference to agency statutory interpretation: US, Canada, UK) with the same skill plus the `progress.md` #48 edits (a supporting-claim coverage list in the citation script; Wiley's cookie wall in the fetch gate; a companion-statement line in the researcher prompt). Round-1 brief and round-2 angles copied verbatim from the 2026-09-04 run; parallel execution on a fresh window (`progress.md` #49).
+
+| | 2026-09-04 (v1.0 with the central cap, no stop rule) | 2026-09-10/11 (v1.1 + #44 + #46 + #48) |
+|---|---|---|
+| Sources (ok) | 106 (101) | 90 (80; 8 unfetchable, 2 robots-skipped) |
+| Claims corrob./single/contra. | 74/101/2 | 48/73/0 |
+| Central claims | 86 | 55 (41 + 14; per angle 6-12, none at the cap) |
+| Verifier batches | 11 plus rebuilds after a session-limit kill | 8 (none killed) |
+| Research / verification / writing tokens | about 0.75M known / 1.24M / 0.33M | 0.83M / 0.93M / 0.21M + 0.04M fix pass |
+| Generation tokens | 2.32M known (19 agents + 2 killed) | 2.01M (15 agents, all known) |
+| Report words, first draft → final | 3,401 → 1,796 | 2,216 → 1,702 (1,708 after the pass) |
+| Citation checks | 177/177 quotes, 0 errors | 121/121 quotes, 128 citations to 50 sources, 0 errors, 0 unused central; 23 unused supporting listed, 2 added |
+| URL health | not comparable (before the UNKNOWN state) | 67 LIVE / 12 ARCHIVED-ONLY / 1 DEAD |
+| Judge | 11/12, 0.897 | 10/12, 0.828 first pass; **11/12, 0.897** after one fix pass |
+| Wall clock | 98 min | 44 min (66 with the pass) |
+
+Same final score at 13% lower cost, with the same single miss in both runs: the passage of the judgment that bounds the holding (which deferential standards survive for agency factfinding and policy) sits in the fetched slip opinion and was extracted as a claim in neither run, although three prompt rules now ask for every holding and carve-out in cited sections. The first-pass miss that did not recur from 2026-09-04 was a writer inversion (a litigant's burden stated backwards against the ledger's own claims), fixed in one 39k pass with no new retrieval. The new supporting-claim coverage list surfaced two rubric-relevant facts on its first use. The audit's five "possibly fabricated" flags were all pages fetched live and `ok` in the ledger, so the flag measured that night's HEAD and archive lookups. Candidates recorded: a question-coverage check before writing (for each numbered part of the question, which claims answer it), since the remaining misses in two domains are passages on fetched pages that no prompt rule reached; and BAILII's block page as a gate marker.
+
+Across the four domains run on v1.1 (culture-history-3 three times, technology-3, science-health-3, policy-law-3): compliance 0.90-1.00 for 1.6-2.0M Sonnet tokens per `standard` question (v1.0 on the same briefs: 0.88-1.00 for 1.5-2.6M), no agent killed in the evening runs, no fabricated URL in the ledger, every quote verified at registration, and each remaining miss a fact on a page no angle fetched or a passage on a fetched page that no researcher extracted.
 
 ## What the pilot measured against `skill/DESIGN.md` §7
 
