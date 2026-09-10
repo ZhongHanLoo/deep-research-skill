@@ -89,6 +89,29 @@ The other v1.1 changes behaved as designed in both runs: `--round` on every regi
 
 The sentence-shingle containment metric is weak for both workflows (prose paraphrases its source), which is why the skill also checks its verbatim quotes inside the ledger (778/778 in the pilot, 140/140 and 139/139 in the confirmation runs). It is reported because it is the protocol's step-5 metric and applies equally to a report with no ledger.
 
+## Fuller pilot, second domain: technology-3 on skill v1.1, 2026-09-10 evening
+
+One `standard` run of technology-3 (HTTP caching semantics) with skill v1.1 plus the two post-tag edits of `progress.md` #44 (the writer prompt gives any presentation element the question asks for its own outline section; `grade --published ""` clears a wrong date). Round-1 brief copied verbatim from the 2026-09-03 run, so only the skill version changed; round 2 re-decomposed from the round-1 gaps (two angles: browser heuristics and bfcache, CDN stale handling and spec edges). The writer fill carried no operator line about presentation, on purpose (`progress.md` #45).
+
+| | 2026-09-03 (v1.0 before any fix) | 2026-09-10 evening (v1.1 + #44) |
+|---|---|---|
+| Sources (ok) | 61 (61) | 77 (73; 4 unfetchable: three Crossref API lookups, one chromestatus page) |
+| Claims corrob./single/contra. | 69/53/1 | 45/84/2 |
+| Central claims | 85 | 60 (46 + 14; per angle 6-14, none at the cap) |
+| Verifier batches | 11 | 8 (none killed) |
+| Research / verification / writing tokens | about 0.42M / 0.79M / 0.29M | 0.62M / 0.84M / 0.18M |
+| Generation tokens | 1.50M (16 agents) | 1.64M (15 agents), all known |
+| Report words, first draft → final | not recorded → 1,798 | 1,790 → 1,510 |
+| Citation checks | 123/123 quotes, 0 errors | 131/131 quotes, 127 citations to 48 sources, 0 errors, 6 central claims unused (duplicates of facts stated via a mirror host of the same RFC) |
+| URL health | 57 LIVE / 4 DEAD | 66 LIVE / 0 DEAD / 7 UNKNOWN (archive lookup failed) |
+| Judge | 9/12 → 10/12 after a coverage pass (0.77 → 0.88) | **11/12, weighted 0.923, first pass, no coverage pass** |
+| `cite_audit.py`: URL valid / flagged / containment | 0.984 / 0 / 0.10 | 0.92 / 0 / 0.07 |
+| Wall clock | about 2 h incl. an outage | 39 min |
+
+What moved: compliance rose from 0.88 (after a 140k coverage pass) to 0.923 on the first pass, the run took a third of the wall clock, and the cost is level with the v1.0 run despite a second round-2 angle (the 2026-09-03 run had 85 central claims and 11 verifier batches; this one 60 and 8, at about 105k per batch). The presentation item that failed in 2026-09-03 passed: the writer's outline named a directive-definitions table as the presentation element the question asks for and gave it its own section and budget, with no operator line in the fill, which is what the #44 prompt rule was for. The one failure is the same recall item as on 2026-09-03: a normative rule in RFC 9111 that sat on a fetched page (the RFC was registered three times, from three mirror hosts) and was never extracted as a claim, so no writer pass could have added it; recorded as a recall failure of the adjacent-rule class, no retrieval added after judging. The judge also noted two internal inconsistencies of emphasis (a SHOULD versus "encouraged" for heuristic freshness; Chrome's bfcache change stated as settled in the table and as rolling out in the body).
+
+Also observed: the URL dedup does not see mirror hosts (rfc-editor, httpwg, datatracker), so the same RFC appears up to three times in the sources list and verifiers had to apply the same-author rule to mirrors; the same-author rule was applied three times (an RFC co-author's vendor blog, a Google-authored draft against a Chromium thread, RFC mirrors); two contradictions were real (a "proprietary to Fastly" claim against the 2001 W3C edge-architecture note; a Firefox explanation retracted in its own source's editor's note); one quote overreach was flagged by a verifier; and the new `grade --published ""` clear was used once, on a placeholder date an agent reported itself.
+
 ## What the pilot measured against `skill/DESIGN.md` §7
 
 1. False refutation: the built-in refuted 2 of 25 claims by 0-3 and 1-2 votes; both refuted claims were then re-asserted in its own findings (judge-recorded contradictions). The skill's "default unverified" produced 0 false contradictions in 778 claims (8 contradictions, all real source disagreements over dates or counts).
