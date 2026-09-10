@@ -63,27 +63,31 @@ The built-in workflow (Claude Code 2.1.258; architecture described in `research/
 
 **Cost finding.** A fresh built-in run (about 100 agents, 3.7M tokens) did not fit inside one subscription window on this account: attempts 1 and 2 (3.74M and 2.70M tokens) died at the verify and synthesis steps on the session limit; attempt 3 completed only because the workflow resume cache replayed the search and fetch stages. The two failed attempts cost 6.44M tokens for no report. On this evidence the user stopped the baseline at one question (decision 2026-09-05, `progress.md` #41): each further question would cost about two windows and 5-6M tokens, and the design changes queued from Stage B will change the skill before a fuller pilot.
 
-## Confirmation run after the changes (skill v1.1), 2026-09-10
+## Confirmation runs after the changes (skill v1.1), 2026-09-10
 
-culture-history-3 again, same round-1 brief and the same round-2 angles as the 2026-09-04 run, so only the skill differed (`progress.md` #42).
+culture-history-3 twice more, same round-1 brief and the same round-2 angles as the 2026-09-04 run, so only the skill differed (`progress.md` #42 and #43). The morning run used a researcher prompt that named the per-angle central cap ("16"); the afternoon run used the same prompt with the number removed (the cap itself unchanged). Everything else, including the operator, the models and the question, was the same.
 
-| | 2026-09-04 (v1.0, stop rule as an operator line) | 2026-09-10 (v1.1) |
-|---|---|---|
-| Sources (ok) | 64 (63) | 84 (79) |
-| Claims corrob./single/contra. | 48/107/3 | 64/69/7 |
-| Central claims | 59 | 80 |
-| Verifier batches | 9 | 11 (16 launched: 5 killed by a machine-side network error and rebuilt from the ledger) |
-| Generation tokens | 1.85M (16 agents) | 2.17M known (23 launched, 18 completed; the killed agents' usage is unknown) |
-| Report words, first draft → final | 2,846 → 1,770 | 2,241 → 1,732 |
-| Citation checks | 158/158 quotes, 0 errors, 0 unused central | 140/140, 0 errors, 0 unused central |
-| URL health | 54 LIVE / 7 ARCHIVED-ONLY / 1 DEAD / 1 UNKNOWN | 71 LIVE / 2 ARCHIVED-ONLY / 0 DEAD / 6 UNKNOWN |
-| Judge | 12/12, compliance 1.00 | 12/12, compliance 1.00 (first pass, no coverage pass) |
-| `cite_audit.py`: URL valid / flagged / containment | 0.938 / 1 / 0.15 | 0.94 / 0 / 0.14 |
-| Wall clock | 56 min | 75 min incl. about 17 min of outage and restart |
+| | 2026-09-04 (v1.0, stop rule as an operator line) | 2026-09-10 a.m. (v1.1, cap named in the prompt) | 2026-09-10 p.m. (v1.1, cap stated without a number) |
+|---|---|---|---|
+| Sources (ok) | 64 (63) | 84 (79) | 67 (64) |
+| Claims corrob./single/contra. | 48/107/3 | 64/69/7 | 53/83/3 |
+| Central claims | 59 | 80 (three of six angles at exactly 16) | 63 (per angle 8-14, none at the cap) |
+| Verifier batches | 9 | 11 (16 launched: 5 killed by a machine-side network error and rebuilt from the ledger) | 9 (none killed) |
+| Generation tokens | 1.85M (16 agents) | 2.17M known (23 launched, 18 completed; the killed agents' usage is unknown) | 1.85M (16 agents), 1.90M with one presentation pass |
+| Report words, first draft → final | 2,846 → 1,770 | 2,241 → 1,732 | 1,955 → 1,620 (1,790 after the pass) |
+| Citation checks | 158/158 quotes, 0 errors, 0 unused central | 140/140, 0 errors, 0 unused central | 139/139, 0 errors, 0 unused central |
+| URL health | 54 LIVE / 7 ARCHIVED-ONLY / 1 DEAD / 1 UNKNOWN | 71 / 2 / 0 / 6 | 61 / 3 / 0 / 0 |
+| Judge | 12/12, compliance 1.00 | 12/12, compliance 1.00 (first pass, no coverage pass) | 11/12, 0.966 first pass; 12/12, 1.00 after one presentation pass |
+| `cite_audit.py`: URL valid / flagged / containment | 0.938 / 1 / 0.15 | 0.94 / 0 / 0.14 | 0.97 / 1 (a council archive URL whose host failed DNS; registered as possibly-fabricated, not cited) / 0.20 |
+| Wall clock | 56 min | 75 min incl. about 17 min of outage and restart | 45 min (51 with the pass) |
 
-Compliance held and the 2026-09-04 judge's one criticism (low-grade corroborating sources) did not recur: 75 of 79 fetched sources were graded by the agent that registered them and the report's confidence column read the grades. Cost rose with the central-claim count (per-batch verifier cost was unchanged at about 115k tokens): every researcher still stopped at 4 sources, but three of six angles registered exactly 16 central claims, the per-angle figure the new prompt named. The mechanical cap worked as a ceiling and the sentence announcing it worked as a target, so the numerals were removed from the researcher prompt after the run (the cap itself stays, env-overridable); that wording is not yet re-tested. The other changes behaved as designed: `--round` on every registration left no stray claims for the final batch build; the same-author independence rule was applied four times (one claim correctly left single-source when its only corroboration was the same author on another site); the outline-with-budgets rule cut the writer's overshoot from +90% to +49% without removing draft-then-cut; no menu-only page reached the ledger.
+Compliance held across all three runs and the 2026-09-04 judge's one criticism (low-grade corroborating sources) did not recur: in both v1.1 runs almost every fetched source was graded by the agent that registered it (75 of 79, then 58 of 64 with the six stragglers being exploratory fetches never used as evidence) and the report's confidence column read the grades. The afternoon run's one first-pass failure was a presentation item, the dated timeline the question asks for: the operator's writer fill did not request it (the morning fill had, by hand), the writer did not act on the brief's line about it, and one 46k-token presentation pass with no new retrieval (a cited timeline table built from claims already in the ledger) brought the report to 12/12. Fact recall and citation support did not move between the runs.
 
-The sentence-shingle containment metric is weak for both workflows (prose paraphrases its source), which is why the skill also checks its verbatim quotes inside the ledger (778/778). It is reported because it is the protocol's step-5 metric and applies equally to a report with no ledger.
+Cost is the finding. Every researcher stopped at 4 sources in all three runs, so the sources per angle were the same; what moved was how many claims researchers marked central. With the cap named in the prompt, three of six angles registered exactly 16 and the run cost 17% more on known tokens (more in truth, since five killed verifiers went uncounted). With the number removed, the central count fell back to the stop-rule level (63 against 59), verification to 9 batches, and the run cost the same 1.85M as on 2026-09-04. Per-batch verifier cost was about 116k tokens in all three runs, so the central count is the cost lever, the mechanical cap is a backstop that never bound in the afternoon run (highest angle 14), and the sentence announcing a number acted as a target. The prompt states the cap without a number; the default cap stays 16, env-overridable.
+
+The other v1.1 changes behaved as designed in both runs: `--round` on every registration left no stray claims for the final batch build (0 both times); the same-author independence rule was applied by four verifiers in the morning and three in the afternoon (Robinson's pieces on The Past, OUPblog, Open Book Publishers and as Wikipedia's own source were declined as mutual corroboration; a LibreTexts page bylined by the British Museum was declined as independent of the Museum); the outline-with-budgets rule cut the writer's overshoot from +90% to +49% and then +30% without removing draft-then-cut; no menu-only page reached the ledger. The afternoon run also reached more primary texts (Wilson 1803 on Article 16, Young's 1823 *Account*, Budge 1905 and 1913, the Andrews/BM 1985 translation of the decree, the BM collection record via Wayback, a peer-reviewed conservation abstract) and its three contradictions are all real disagreements between graded sources over a date or a count (19 vs "likely 15" July 1799; 4 vs 16 plates in the *Lettre*; June vs July 1802 for the Museum gift).
+
+The sentence-shingle containment metric is weak for both workflows (prose paraphrases its source), which is why the skill also checks its verbatim quotes inside the ledger (778/778 in the pilot, 140/140 and 139/139 in the confirmation runs). It is reported because it is the protocol's step-5 metric and applies equally to a report with no ledger.
 
 ## What the pilot measured against `skill/DESIGN.md` §7
 
@@ -94,4 +98,4 @@ The sentence-shingle containment metric is weak for both workflows (prose paraph
 5. Fetch ≥ verify allocation: not achieved (verification stayed about half of every run) until the source-target stop rule; then research 601k vs verification 971k on culture-history-3 with no loss of recall.
 
 ## Changes applied after the pilot (skill v1.1, 2026-09-10; confirmation run above)
-Applied in `progress.md` #42, contract first (`skill/deep-research/reference/contracts.md` v1.1): a per-angle central cap in the ledger (16 = source target 4 × per-source cap 4, env-overridable) with the source-target stop rule moved into the researcher prompt; `--round` accepted by `claim add --from-json` so a claim carries its researcher's round, not its source's; verifiers grade the sources they add and the writer's confidence rule reads the grade; an author-level independence note for verifiers; a nav-only fetch gate for menu pages that pass the length gate; the writer's length target stated first with a per-section word budget drafted to; the adjacent-rule extraction instruction extended to judgments; a `claim unevidence` command as the ledger's one undo. After the confirmation run the per-angle figure was removed from the researcher prompt text (see above).
+Applied in `progress.md` #42, contract first (`skill/deep-research/reference/contracts.md` v1.1): a per-angle central cap in the ledger (16 = source target 4 × per-source cap 4, env-overridable) with the source-target stop rule moved into the researcher prompt; `--round` accepted by `claim add --from-json` so a claim carries its researcher's round, not its source's; verifiers grade the sources they add and the writer's confidence rule reads the grade; an author-level independence note for verifiers; a nav-only fetch gate for menu pages that pass the length gate; the writer's length target stated first with a per-section word budget drafted to; the adjacent-rule extraction instruction extended to judgments; a `claim unevidence` command as the ledger's one undo. After the morning confirmation run the per-angle figure was removed from the researcher prompt text; the afternoon re-test confirmed that the number, not the cap, had raised the central count (see above). v1.1 was tagged at that state.
