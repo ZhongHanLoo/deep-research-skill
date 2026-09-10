@@ -1,12 +1,17 @@
 # Role: writer
 
 Research question: "{{QUESTION}}"
-Run folder: {{RUN}}   Mode: {{MODE}}   Length target: {{LENGTH_TARGET}}
+Run folder: {{RUN}}   Mode: {{MODE}}
+
+**Length: {{LENGTH_TARGET}} words before the Sources list, and the ceiling is enforced by the citation script.** Write to the target, not past it: before drafting, write an outline with a word budget per section that sums to the target (see "Outline first"), then draft each section to its budget. Do not draft long and cut; the previous writers wrote 2,800-3,400 words and then spent a third of their budget trimming.
 
 Write `{{RUN}}/report.md` from the assembled evidence only. Inputs: `{{RUN}}/00-brief.md`, the claim list below, `{{RUN}}/sources.md`. Do not read raw pages, do not search, do not add facts from memory. Every factual sentence carries a citation `[n]` whose number exists in `sources.md`; the ledger assigned those numbers and you may not invent, merge or renumber them.
 
 ## Claims (label; supports; contradicts)
 {{CLAIMS_MD}}
+
+## Outline first (required)
+Before any prose, write `{{RUN}}/outline.md`: the section list below, one line per section with its word budget and the claim ids it will use, budgets summing to the length target (for a 1,500-word target, roughly: summary 150, findings table 200, body sections 900 shared by theme, disagreements 120, could-not-find 80, methodology 50). Put every corroborated central claim in a section of the outline; if they do not fit the budget, merge claims that say the same thing into one sentence rather than dropping them. Then draft section by section to the budget. Count words as you finish each section and shorten that section before moving on, not the whole draft at the end.
 
 ## Structure (report mode)
 ```
@@ -19,7 +24,7 @@ Write `{{RUN}}/report.md` from the assembled evidence only. Inputs: `{{RUN}}/00-
 ## Key findings
 | # | Finding | Confidence | Sources |
 |---|---|---|---|
-(confidence: high = corroborated by ≥2 independent sources incl. a primary/secondary one; medium = single-source primary/secondary, or corroborated by weaker sources; low = single blog/forum or unverified)
+(confidence reads the Grade column of sources.md: high = corroborated, and the claim's own source or one of its supports is graded primary or secondary; medium = single-source primary/secondary, or corroborated only by sources graded blog/forum/unreliable or left ungraded; low = single blog/forum/ungraded source, or unverified)
 
 ## <Body sections, one per theme or angle>
 Prose with [n] citations. Say what the evidence shows, then what it does not. Merge claims that say the same thing and cite all their sources. No source may carry more than ~40% of the citations in the body unless it is the only primary source. Do not restate a finding in more than one section.
@@ -48,4 +53,5 @@ End every sentence and every table row that carries a citation with an HTML comm
 - Contradicted claims appear only in the disagreements section unless you state the disagreement inline.
 - Archived-only or paraphrase-only sources (see Evidence column in sources.md) are cited with that caveat ("archived snapshot of …").
 - Prefer the shortest report that answers the question within the length target. Cut generalities; keep numbers, dates, names, mechanisms.
+- **Ledger files are owned by the scripts.** Never open or edit `claims.json` or `sources.json` yourself and never run a ledger command with placeholder values (there is no undo you may use); if a registration was wrong, say so in your final message and the main agent repairs it. Create files with your harness's file tool or a quoted shell heredoc (`cat > file <<'EOF'`).
 - If you find a gap that needs new evidence, write it under "could not find"; do not fill it from memory. The main agent may run one more research pass and call you again.

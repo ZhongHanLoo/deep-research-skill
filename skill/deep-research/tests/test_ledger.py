@@ -55,6 +55,70 @@ class LedgerTest(unittest.TestCase):
         claims = json.loads((self.run / "claims.json").read_text())["claims"]
         self.assertEqual(sum(1 for c in claims if c["importance"] == "central"), 5)
 
+    def test_angle_cap_and_state(self):
+        for i in range(6):
+            self.L(["add-url", f"https://example.com/p{i}", "--angle", "m"])
+        quotes = ["reached USD 4.2 billion in 2024", "Another sentence", "A third sentence about growth", "A fourth sentence about risk"]
+        env = dict(self.env, DEEP_RESEARCH_ANGLE_CENTRAL_CAP="10")
+        n = 0
+        for src in range(1, 7):
+            for q in quotes:
+                code, out, _ = self.add(src, f"fact {n}", q, "central", env=env)
+                self.assertEqual(code, 0)
+                n += 1
+        claims = json.loads((self.run / "claims.json").read_text())["claims"]
+        self.assertEqual(sum(1 for c in claims if c["importance"] == "central"), 10)
+        self.assertEqual(sum(1 for c in claims if c["importance"] == "supporting"), 14)
+        self.assertTrue(any("angle 'a' already has 10" in note for c in claims for n_ in [0] for note in c["notes"]))
+        code, out, _ = self.L(["state"], env=env)
+        st = json.loads(out)
+        self.assertEqual(st["claims"]["central_by_angle"], {"a": 10})
+        self.assertEqual(st["claims"]["angle_central_cap"], 10)
+        # a different angle has its own budget
+        code, out, _ = self.L(["claim", "add", "--source", "6", "--angle", "b", "--text", "x", "--quote", "Another sentence", "--importance", "central"], env=env)
+        self.assertEqual(code, 0)
+        self.assertEqual(json.loads(out)["importance"], "central")
+
+    def test_round_precedence_from_json(self):
+        self.L(["add-url", "https://example.com/a", "--angle", "m", "--round", "1"])
+        f = self.d / "claims-r2.json"
+        f.write_text(json.dumps([
+            {"source": 1, "angle": "b", "text": "no round given", "quote": "Another sentence", "importance": "supporting"},
+            {"source": 1, "angle": "b", "text": "item round wins", "quote": "A third sentence about growth", "importance": "supporting", "round": 3},
+        ]))
+        code, out, _ = self.L(["claim", "add", "--from-json", str(f), "--round", "2"])
+        self.assertEqual(code, 0)
+        rounds = {c["text"]: c["round"] for c in json.loads((self.run / "claims.json").read_text())["claims"]}
+        self.assertEqual(rounds["no round given"], 2)
+        self.assertEqual(rounds["item round wins"], 3)
+        # without --round the source's round is used
+        f.write_text(json.dumps([{"source": 1, "angle": "b", "text": "source round", "quote": "A fourth sentence about risk", "importance": "supporting"}]))
+        self.L(["claim", "add", "--from-json", str(f)])
+        rounds = {c["text"]: c["round"] for c in json.loads((self.run / "claims.json").read_text())["claims"]}
+        self.assertEqual(rounds["source round"], 1)
+        self.assertEqual(len(json.loads(self.L(["claims", "list", "--round", "2"])[1])), 1)
+
+    def test_unevidence(self):
+        for u in ["https://example.com/a", "https://news.bbc.co.uk/c", "https://other.org/d"]:
+            self.L(["add-url", u, "--angle", "m"])
+        self.add(1, "t", "reached USD 4.2 billion in 2024", "central")
+        self.L(["claim", "evidence", "c001", "--supports", "2", "--note", "bbc", "--by", "v1"])
+        self.L(["claim", "evidence", "c001", "--supports", "3", "--note", "other", "--by", "v2"])
+        self.assertEqual(json.loads(self.L(["claims", "list"])[1])[0]["label"], "corroborated")
+        code, out, _ = self.L(["claim", "unevidence", "c001", "--source", "2", "--by", "v9"])
+        self.assertEqual(code, 2)  # label mismatch: nothing removed
+        code, out, _ = self.L(["claim", "unevidence", "c001", "--source", "2", "--by", "v1"])
+        self.assertEqual(code, 0)
+        res = json.loads(out)
+        self.assertEqual([r["source"] for r in res["removed"]], [2])
+        self.assertEqual(res["claim"]["label"], "corroborated")  # [3] still there
+        self.assertTrue(any(n.startswith("unevidence: [2]") for n in res["claim"]["notes"]))
+        code, out, _ = self.L(["claim", "unevidence", "c001", "--source", "3", "--uncheck"])
+        res = json.loads(out)
+        self.assertEqual(res["claim"]["supports"], [])
+        self.assertFalse(res["claim"]["checked"])
+        self.assertEqual(res["claim"]["label"], "unverified")
+
     def test_independence_and_labels(self):
         for u in ["https://example.com/a", "https://sub.example.com/b", "https://news.bbc.co.uk/c", "https://datatracker.ietf.org/doc/html/rfc9111", "https://www.rfc-editor.org/rfc/rfc9111"]:
             self.L(["add-url", u, "--angle", "m"])

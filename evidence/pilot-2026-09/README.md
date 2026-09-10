@@ -63,6 +63,26 @@ The built-in workflow (Claude Code 2.1.258; architecture described in `research/
 
 **Cost finding.** A fresh built-in run (about 100 agents, 3.7M tokens) did not fit inside one subscription window on this account: attempts 1 and 2 (3.74M and 2.70M tokens) died at the verify and synthesis steps on the session limit; attempt 3 completed only because the workflow resume cache replayed the search and fetch stages. The two failed attempts cost 6.44M tokens for no report. On this evidence the user stopped the baseline at one question (decision 2026-09-05, `progress.md` #41): each further question would cost about two windows and 5-6M tokens, and the design changes queued from Stage B will change the skill before a fuller pilot.
 
+## Confirmation run after the changes (skill v1.1), 2026-09-10
+
+culture-history-3 again, same round-1 brief and the same round-2 angles as the 2026-09-04 run, so only the skill differed (`progress.md` #42).
+
+| | 2026-09-04 (v1.0, stop rule as an operator line) | 2026-09-10 (v1.1) |
+|---|---|---|
+| Sources (ok) | 64 (63) | 84 (79) |
+| Claims corrob./single/contra. | 48/107/3 | 64/69/7 |
+| Central claims | 59 | 80 |
+| Verifier batches | 9 | 11 (16 launched: 5 killed by a machine-side network error and rebuilt from the ledger) |
+| Generation tokens | 1.85M (16 agents) | 2.17M known (23 launched, 18 completed; the killed agents' usage is unknown) |
+| Report words, first draft → final | 2,846 → 1,770 | 2,241 → 1,732 |
+| Citation checks | 158/158 quotes, 0 errors, 0 unused central | 140/140, 0 errors, 0 unused central |
+| URL health | 54 LIVE / 7 ARCHIVED-ONLY / 1 DEAD / 1 UNKNOWN | 71 LIVE / 2 ARCHIVED-ONLY / 0 DEAD / 6 UNKNOWN |
+| Judge | 12/12, compliance 1.00 | 12/12, compliance 1.00 (first pass, no coverage pass) |
+| `cite_audit.py`: URL valid / flagged / containment | 0.938 / 1 / 0.15 | 0.94 / 0 / 0.14 |
+| Wall clock | 56 min | 75 min incl. about 17 min of outage and restart |
+
+Compliance held and the 2026-09-04 judge's one criticism (low-grade corroborating sources) did not recur: 75 of 79 fetched sources were graded by the agent that registered them and the report's confidence column read the grades. Cost rose with the central-claim count (per-batch verifier cost was unchanged at about 115k tokens): every researcher still stopped at 4 sources, but three of six angles registered exactly 16 central claims, the per-angle figure the new prompt named. The mechanical cap worked as a ceiling and the sentence announcing it worked as a target, so the numerals were removed from the researcher prompt after the run (the cap itself stays, env-overridable); that wording is not yet re-tested. The other changes behaved as designed: `--round` on every registration left no stray claims for the final batch build; the same-author independence rule was applied four times (one claim correctly left single-source when its only corroboration was the same author on another site); the outline-with-budgets rule cut the writer's overshoot from +90% to +49% without removing draft-then-cut; no menu-only page reached the ledger.
+
 The sentence-shingle containment metric is weak for both workflows (prose paraphrases its source), which is why the skill also checks its verbatim quotes inside the ledger (778/778). It is reported because it is the protocol's step-5 metric and applies equally to a report with no ledger.
 
 ## What the pilot measured against `skill/DESIGN.md` §7
@@ -73,5 +93,5 @@ The sentence-shingle containment metric is weak for both workflows (prose paraph
 4. Quote containment failure of model-reported quotes: 0 of 778 at the ledger (the script rejects a non-verbatim quote at registration, so the failure shows up as retries in researcher transcripts, not in the ledger).
 5. Fetch ≥ verify allocation: not achieved (verification stayed about half of every run) until the source-target stop rule; then research 601k vs verification 971k on culture-history-3 with no loss of recall.
 
-## Queued changes (not applied; after this pilot)
-Per-angle or per-run central cap in the ledger; `--round` on `claim add --from-json` (claims on an earlier round's source were stored with that round and missed a batch build); verifiers grade the sources they add and the writer's confidence rule reads grades; author-level independence check; a "no sentences" gate for nav-only pages that pass the length gate; the writer prompt's length target before its structure did not stop draft-then-cut; extend the adjacent-rule instruction to judgments; a `claim unevidence` command.
+## Queued changes (applied 2026-09-10 as skill v1.1; confirmation run below)
+Applied in `progress.md` #42, contract first (`skill/deep-research/reference/contracts.md` v1.1): per-angle central cap in the ledger (16 = source target 4 × per-source cap 4, env-overridable) with the source-target stop rule in the researcher prompt; `--round` on `claim add --from-json` (claims on an earlier round's source were stored with that round and missed a batch build); verifiers grade the sources they add and the writer's confidence rule reads grades; author-level independence check; a "no sentences" gate for nav-only pages that pass the length gate; the writer prompt's length target before its structure did not stop draft-then-cut; extend the adjacent-rule instruction to judgments; a `claim unevidence` command.

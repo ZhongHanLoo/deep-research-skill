@@ -397,6 +397,40 @@ def extract_pdf(data: bytes) -> tuple[str | None, str]:
 # plausibility gate (survey §4.2)
 # ----------------------------------------------------------------------------
 
+_MD_IMG = re.compile(r"!\[[^\]]*\]\([^)]*\)")
+_MD_LINK = re.compile(r"\[([^\]]*)\]\([^)]*\)")
+_BARE_URL = re.compile(r"https?://\S+")
+_LINE_PREFIX = re.compile(r"^[\s*\-•>#|—]+")
+_SENTENCE = re.compile(r"[^.!?\n]{40,}?[.!?](?=[\s\"')\]]|$)")
+NAV_SHARE_MAX = 0.85   # navigation lines may hold at most this share of the characters ...
+NAV_PROSE_MIN = 120    # ... unless the page still carries this many words of prose
+
+
+def nav_stats(text: str) -> tuple[float, int]:
+    """(share of characters on navigation lines, prose words). Contract §3, nav-only gate (2026-09-10).
+    A navigation line has < 8 words after stripping Markdown links/images/URLs and bullets and does not end
+    a sentence; prose words are counted inside sentences of >= 40 chars in the remaining lines, joined per paragraph."""
+    lines = [l for l in text.splitlines() if l.strip()]
+    total = sum(len(l) for l in lines) or 1
+    nav = 0
+    prose = 0
+    for para in re.split(r"\n\s*\n", text):
+        kept = []
+        for l in para.splitlines():
+            if not l.strip():
+                continue
+            s = _BARE_URL.sub("", _MD_LINK.sub(r"\1", _MD_IMG.sub("", l)))
+            s = _LINE_PREFIX.sub("", s).strip()
+            if len(s.split()) < 8 and not re.search(r"[.!?]\s*$", s):
+                nav += len(l)
+            else:
+                kept.append(s)
+        if kept:
+            for sent in _SENTENCE.findall(" ".join(kept)):
+                prose += len(sent.split())
+    return nav / total, prose
+
+
 def gate(text: str, html_len: int | None = None, title: str | None = None) -> str:
     t = text or ""
     if title and any(m in title.lower() for m in BLOCK_MARKERS):
@@ -420,6 +454,9 @@ def gate(text: str, html_len: int | None = None, title: str | None = None) -> st
         terms = len(re.findall(r"[.!?](\s|$)", t))
         if terms < len(t) / 5000:
             return "failed:word-list"
+    nav_share, prose_words = nav_stats(t)
+    if nav_share >= NAV_SHARE_MAX and prose_words < NAV_PROSE_MIN:
+        return "failed:nav-only"
     return "passed"
 
 

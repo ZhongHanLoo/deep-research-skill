@@ -3,7 +3,7 @@ name: deep-research
 description: Use when the user wants a researched, cited answer or report that needs web sources — market, technical, scientific, policy or historical questions, comparisons, "what does the evidence say", state-of-the-art briefs. Not for questions about a codebase or answerable from memory.
 license: MIT
 metadata:
-  version: 1.0.0
+  version: 1.1.0
   homepage: https://github.com/ZhongHanLoo/deep-research-skill
 ---
 
@@ -45,10 +45,10 @@ python3 S/ledger.py init --question "<question>" --preset <preset> --mode <mode>
 Fill `prompts/brief.md` and write `<run>/00-brief.md`: refined question, 3-6 angles, per angle a working hypothesis and what would disconfirm it, first queries, preset, recommended agent count, execution mode. Show the brief. Unless `--yes`: ask the user to confirm or adjust angles, agent count, execution. Then continue autonomously; no further questions.
 
 ### 2-3. Research round (one agent per angle)
-For each angle, run one **researcher** with `prompts/researcher.md` filled (question, run dir, angle, hypothesis, per-angle source target). Parallel: launch all angles at once. Sequential: one after another, same prompt. Each researcher:
+For each angle, run one **researcher** with `prompts/researcher.md` filled (question, run dir, angle, hypothesis, per-angle source target). The prompt tells the researcher to **stop at the source target and never exceed it by more than one**: in the pilot that single rule cut central claims from 85-100 to 59 and verification cost by a third with no loss of recall (`evidence/pilot-2026-09/README.md`). Parallel: launch all angles at once. Sequential: one after another, same prompt. Each researcher:
 1. searches with the harness search tool, keyword-shaped queries, broad then narrow, deduplicated; treats results as pointers only;
 2. fetches each chosen pointer with `S/ledger.py --run <run> add-url <url> --angle <angle> --round <r>` (returns `[n]` and `raw/<n>.txt`);
-3. reads `raw/<n>.txt` and extracts 2-8 atomic claims per source, each with a verbatim quote, via `S/ledger.py claim add ...` (the script rejects quotes not found in the text; re-copy, do not paraphrase; it also caps `central` at 4 per source and writes the rest as `supporting`);
+3. reads `raw/<n>.txt` and extracts 2-8 atomic claims per source, each with a verbatim quote, via `S/ledger.py claim add ... --round <r>` (the script rejects quotes not found in the text; re-copy, do not paraphrase; it also caps `central` at 4 per source and 16 per angle, env-overridable, and writes the rest as `supporting`);
 4. grades the source (`S/ledger.py grade <n> --grade ...`);
 5. writes `angles/<angle>.md` (headings in `reference/contracts.md` §9) including suggested sub-questions.
 
@@ -63,10 +63,10 @@ Read the state plus the `Gaps` sections of `angles/*.md`. Write round-r angles (
 Verification is tiered so that reading keeps more budget than adjudicating (one corroboration batch of 8 claims costs about as much as a researcher):
 - **Corroborate** (search for independent supporting and contradicting evidence): the claims the preset table names, in batches of ≤8 (`S/ledger.py claims list --unchecked --importance central --format md`).
 - **Quote-check** (no searching; does the quote support the claim as written?): the next importance tier, in batches of ≤20, appended to the same verifier prompts under "Claims to quote-check only".
-Run one **verifier** per batch with `prompts/verifier.md` (deep: two verifiers per corroboration batch, independently; the ledger merges their evidence). Verifiers record with `claim evidence` / `claim checked` and never set labels; the ledger derives them. Never launch more verifiers than researchers ran.
+Run one **verifier** per batch with `prompts/verifier.md` (deep: two verifiers per corroboration batch, independently; the ledger merges their evidence). Verifiers record with `claim evidence` / `claim checked` and never set labels; the ledger derives them. They **grade every source they add** right after `add-url`, so the writer's confidence rule can read the grade. Never launch more verifiers than researchers ran. A wrong or placeholder registration is undone by the main agent only, with `S/ledger.py claim unevidence <id> --source <n> [--by <label>]`.
 
 ### 6. Synthesize
-One **writer** with `prompts/writer.md`. Inputs: `00-brief.md`, `S/ledger.py claims list --format md` (all labels), `sources.md` (run `S/ledger.py render` first). The writer never reads raw pages and never invents `[n]`. The writer runs `S/cite_check.py --no-network` itself before finishing (tracing, length, coverage) so the main agent's pass in phase 7 normally finds only health issues. Structure: exec summary → key-findings table → body with `[n]` → disagreements → what this could not find → methodology → sources. Length per preset; `brief` mode = the summary and findings table only.
+One **writer** with `prompts/writer.md`. Inputs: `00-brief.md`, `S/ledger.py claims list --format md` (all labels), `sources.md` (run `S/ledger.py render` first). The writer first writes `outline.md` (sections with word budgets summing to the length target and the claim ids each will use) and drafts to it, section by section; the length target is stated before the structure and drafting long then cutting is forbidden. Confidence in the findings table reads the Grade column. The writer never reads raw pages and never invents `[n]`. The writer runs `S/cite_check.py --no-network` itself before finishing (tracing, length, coverage) so the main agent's pass in phase 7 normally finds only health issues. Structure: exec summary → key-findings table → body with `[n]` → disagreements → what this could not find → methodology → sources. Length per preset; `brief` mode = the summary and findings table only.
 
 ### 7. Citation pass
 ```
@@ -81,7 +81,7 @@ python3 S/ledger.py --run <run> finalize --harness <name> --model <model> --agen
 Tell the user the run folder path and the report's summary lines.
 
 ## Rules (the ones that move the metrics)
-- Quotes come from `raw/<n>.txt` only. Never from search snippets, never from a harness fetch summary. If a page could not be fetched, register the pointer with `add-snippet` and never quote it.
+- Quotes come from `raw/<n>.txt` only. Never from search snippets, never from a harness fetch summary. If a page could not be fetched, register the pointer with `add-snippet` and never quote it. The fetch script's plausibility gate rejects block pages, consent walls, undecoded binaries and menu-only pages (`failed:nav-only`), so a `status: ok` source has readable prose.
 - `[n]` numbers come only from the ledger, and every cited sentence names the claims it rests on. No URL appears in `report.md` outside `sources.md`'s numbering.
 - Claims are atomic: one fact, ≤25 words.
 - Uncertainty is labelled `unverified`, never silently dropped and never marked `contradicted` without a contradicting source `[n]`.

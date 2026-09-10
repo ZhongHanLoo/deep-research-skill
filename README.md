@@ -6,7 +6,7 @@ Built and tested on Claude Code. Written to the open Agent Skills standard (`SKI
 
 ## Status
 
-Round 1, in progress (started 2026-09-02). Requirements locked (`REQUIREMENTS.md`), four literature surveys done, v1 design written (`skill/DESIGN.md`), and the skill implemented on 2026-09-03 (`skill/deep-research/`). Scripts pass their unit and live integration tests; a smoke test and a two-question cost probe at `standard` depth have run (Opus-judged rubric compliance 0.88 and 0.96); the remaining probe questions and the comparison against Claude Code's built-in `/deep-research` are next (`eval/RUNBOOK.md`).
+Round 1, pilot complete (started 2026-09-02). Requirements locked (`REQUIREMENTS.md`), four literature surveys done, v1 design written (`skill/DESIGN.md`), the skill implemented on 2026-09-03 and revised to v1.1 on 2026-09-10 (`skill/deep-research/`). Scripts pass their unit and live integration tests. The September 2026 pilot ran the skill on five stable questions at `standard` depth (Opus-judged rubric compliance 0.88-1.00, mean 0.95, 1.5-2.6M Sonnet tokens each) and the Claude Code built-in `/deep-research` on one of them (0.655 versus 1.00; `evidence/pilot-2026-09/README.md`). v1.1 applies what the pilot measured: researchers stop at the source target and the ledger caps central claims per angle (the cost lever), verifiers grade the sources they add, the writer drafts to a per-section word budget, and the fetch gate rejects menu-only pages.
 
 ## Install and use (Claude Code)
 

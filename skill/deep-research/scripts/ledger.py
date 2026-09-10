@@ -14,9 +14,10 @@ Contract: skill/deep-research/reference/contracts.md (sections 1, 2, 4, 5, 6).
   ledger.py --run DIR add-snippet URL --snippet TEXT [--angle A] [--title T]
   ledger.py --run DIR grade N --grade G [--published DATE] [--publisher P]
   ledger.py --run DIR claim add --source N --angle A --text T --quote Q --importance I [--round R]
-  ledger.py --run DIR claim add --from-json FILE
+  ledger.py --run DIR claim add --from-json FILE [--round R]
   ledger.py --run DIR claim evidence ID (--supports N | --contradicts N) [--note TEXT] [--by LABEL]
   ledger.py --run DIR claim checked ID [--note TEXT] [--by LABEL]
+  ledger.py --run DIR claim unevidence ID --source N [--by LABEL] [--uncheck]
   ledger.py --run DIR claim note ID --note TEXT
   ledger.py --run DIR claims list [--label L] [--importance I] [--angle A] [--round R] [--unchecked] [--format json|md]
   ledger.py --run DIR state [--format json|md]
@@ -44,7 +45,7 @@ from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import textmatch  # noqa: E402
 
-SKILL_VERSION = "1.0.0"
+SKILL_VERSION = "1.1.0"
 IMPORTANCE = ("central", "supporting", "tangential")
 GRADES = ("primary", "secondary", "blog", "forum", "unreliable")
 LABELS = ("contradicted", "corroborated", "single-source", "unverified")
@@ -54,6 +55,11 @@ LABELS = ("contradicted", "corroborated", "single-source", "unverified")
 # central claim costs ~10-15k tokens to corroborate. Override with env
 # DEEP_RESEARCH_CENTRAL_CAP (0 disables).
 CENTRAL_CAP = int(os.environ.get("DEEP_RESEARCH_CENTRAL_CAP", "4"))
+# Per-angle cap (2026-09-10): at most this many central claims per angle slug, counted across
+# rounds. The per-source cap did not bind per run while researchers fetched 7-8 sources
+# against a target of 4 (central 100 and 86, progress.md #38); default = source target 4 x
+# per-source cap 4. Override with env DEEP_RESEARCH_ANGLE_CENTRAL_CAP (0 disables).
+ANGLE_CENTRAL_CAP = int(os.environ.get("DEEP_RESEARCH_ANGLE_CENTRAL_CAP", "16"))
 TWO_LEVEL_SUFFIXES = {"co.uk", "ac.uk", "org.uk", "gov.uk", "com.au", "co.jp", "co.nz", "com.br", "co.za"}
 # Hosts that aggregate many independent works: two different URLs there are two sources,
 # not one (a PubMed abstract and a PMC article of *different* papers are independent;
@@ -539,8 +545,9 @@ def cmd_grade(args) -> None:
     out({"n": row["n"], "grade": row["grade"], "published": row["published"], "publisher": row["publisher"]})
 
 
-def _validate_claim(run: Run, sources_by_n: dict, item: dict) -> tuple[dict | None, str | None, str | None]:
-    """Returns (claim, reason, nearest). reason None means valid."""
+def _validate_claim(run: Run, sources_by_n: dict, item: dict, default_round: int | None = None) -> tuple[dict | None, str | None, str | None]:
+    """Returns (claim, reason, nearest). reason None means valid.
+    Round precedence: item["round"], then default_round (the --round flag), then the source's round, then 1."""
     try:
         n = int(item.get("source"))
     except (TypeError, ValueError):
@@ -566,7 +573,7 @@ def _validate_claim(run: Run, sources_by_n: dict, item: dict) -> tuple[dict | No
         if not textmatch.contains(quote, raw):
             return None, f"quote not found in {src.get('text_path')}; copy the sentence verbatim", textmatch.best_window(quote, raw)
         quote_verified = True
-    rnd = item.get("round") or src.get("round") or 1
+    rnd = item.get("round") or default_round or src.get("round") or 1
     claim = {
         "id": None, "text": text, "quote": quote, "source": n, "angle": angle, "round": int(rnd),
         "importance": imp, "checked": False, "supports": [], "contradicts": [], "label": "unverified",
@@ -592,7 +599,7 @@ def cmd_claim_add(args) -> None:
     sources_by_n = {s["n"]: s for s in run.sources()["sources"]}
     valid, rejected = [], []
     for i, item in enumerate(items):
-        claim, reason, nearest = _validate_claim(run, sources_by_n, item if isinstance(item, dict) else {})
+        claim, reason, nearest = _validate_claim(run, sources_by_n, item if isinstance(item, dict) else {}, default_round=args.round)
         if claim:
             valid.append(claim)
         else:
@@ -602,17 +609,24 @@ def cmd_claim_add(args) -> None:
         with run.lock():
             data = run.claims()
             central_by_source: dict = {}
+            central_by_angle: dict = {}
             for c in data["claims"]:
                 if c["importance"] == "central":
                     central_by_source[c["source"]] = central_by_source.get(c["source"], 0) + 1
+                    central_by_angle[c.get("angle") or ""] = central_by_angle.get(c.get("angle") or "", 0) + 1
             for c in valid:
-                if CENTRAL_CAP and c["importance"] == "central":
-                    if central_by_source.get(c["source"], 0) >= CENTRAL_CAP:
+                if c["importance"] == "central":
+                    if CENTRAL_CAP and central_by_source.get(c["source"], 0) >= CENTRAL_CAP:
                         c["importance"] = "supporting"
                         c["notes"].append(f"importance-capped: source already has {CENTRAL_CAP} central claims")
                         capped.append(c)
+                    elif ANGLE_CENTRAL_CAP and central_by_angle.get(c["angle"], 0) >= ANGLE_CENTRAL_CAP:
+                        c["importance"] = "supporting"
+                        c["notes"].append(f"importance-capped: angle '{c['angle']}' already has {ANGLE_CENTRAL_CAP} central claims")
+                        capped.append(c)
                     else:
                         central_by_source[c["source"]] = central_by_source.get(c["source"], 0) + 1
+                        central_by_angle[c["angle"]] = central_by_angle.get(c["angle"], 0) + 1
                 c["id"] = f"c{data['next_id']:03d}"
                 data["next_id"] += 1
                 data["claims"].append(c)
@@ -621,7 +635,7 @@ def cmd_claim_add(args) -> None:
         out({"added": [{"id": c["id"], "source": c["source"], "importance": c["importance"], "quote_verified": c["quote_verified"]} for c in valid],
              "rejected": rejected,
              "capped_to_supporting": [c["id"] for c in capped],
-             "note": (f"central cap is {CENTRAL_CAP} per source; {len(capped)} claim(s) written as supporting" if capped else None)})
+             "note": (f"central cap is {CENTRAL_CAP} per source and {ANGLE_CENTRAL_CAP} per angle; {len(capped)} claim(s) written as supporting" if capped else None)})
         sys.exit(3 if rejected else 0)
     if rejected:
         r = rejected[0]
@@ -674,6 +688,31 @@ def cmd_claim_checked(args) -> None:
         run.save_claims(data)
         c = _get_claim(run.claims(), args.id)
     out(c)
+
+
+def cmd_claim_unevidence(args) -> None:
+    """The only ledger undo: remove evidence entries for one source (optionally one verifier label)."""
+    run = Run(args.run).require()
+    with run.lock():
+        data = run.claims()
+        c = _get_claim(data, args.id)
+        removed = []
+        for key in ("supports", "contradicts"):
+            keep = []
+            for e in c[key]:
+                if e.get("source") == args.source and (args.by is None or e.get("by") == args.by):
+                    removed.append({"kind": key, **e})
+                else:
+                    keep.append(e)
+            c[key] = keep
+        if not removed:
+            die(f"no evidence on {args.id} from source [{args.source}]" + (f" by {args.by}" if args.by else ""))
+        c["notes"].append(f"unevidence: [{args.source}] removed" + (f" (entries by {args.by})" if args.by else "") + " by main session")
+        if args.uncheck and not c["supports"] and not c["contradicts"]:
+            c["checked"] = False
+        run.save_claims(data)
+        c = _get_claim(run.claims(), args.id)
+    out({"claim": c, "removed": removed})
 
 
 def cmd_claim_note(args) -> None:
@@ -729,14 +768,17 @@ def build_state(run: Run) -> dict:
     claims = run.claims()["claims"]
     central = [c for c in claims if c["importance"] == "central"]
     per_round: dict = {}
+    per_angle: dict = {}
     for c in central:
         per_round[c.get("round", 1)] = per_round.get(c.get("round", 1), 0) + 1
+        per_angle[c.get("angle") or ""] = per_angle.get(c.get("angle") or "", 0) + 1
     return {
         "question": meta.get("question"), "preset": meta.get("preset"), "mode": meta.get("mode"),
         "sources": {"total": len(sources), "by_status": _counts(sources, "status"), "by_method": _counts(sources, "fetch_method"),
                     "by_round": _counts(sources, "round")},
         "claims": {"total": len(claims), "by_label": _counts(claims, "label"), "by_importance": _counts(claims, "importance"),
-                   "central_by_round": dict(sorted(per_round.items())), "unchecked": sum(1 for c in claims if not c.get("checked"))},
+                   "central_by_round": dict(sorted(per_round.items())), "central_by_angle": dict(sorted(per_angle.items())),
+                   "angle_central_cap": ANGLE_CENTRAL_CAP, "unchecked": sum(1 for c in claims if not c.get("checked"))},
         "central_claims": [{"id": c["id"], "text": c["text"], "source": c["source"], "label": c["label"], "angle": c.get("angle")} for c in central],
         "problem_sources": [{"n": s["n"], "url": s["url"], "status": s["status"], "notes": s.get("notes", "")}
                             for s in sources if s["status"] not in ("ok",)],
@@ -753,7 +795,7 @@ def cmd_state(args) -> None:
     s, c = st["sources"], st["claims"]
     lines.append(f"**Sources:** {s['total']} — by status {s['by_status']} — by method {s['by_method']} — by round {s['by_round']}")
     lines.append(f"**Claims:** {c['total']} — by label {c['by_label']} — by importance {c['by_importance']} — unchecked {c['unchecked']}")
-    lines.append(f"**Central claims per round:** {c['central_by_round']}")
+    lines.append(f"**Central claims per round:** {c['central_by_round']}  **per angle (cap {c['angle_central_cap']}):** {c['central_by_angle']}")
     lines.append("")
     lines.append("## Central claims")
     shown = st["central_claims"][:60]
@@ -932,6 +974,12 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--note")
     s.add_argument("--by")
     s.set_defaults(fn=cmd_claim_checked)
+    s = csub.add_parser("unevidence")
+    s.add_argument("id")
+    s.add_argument("--source", type=int, required=True)
+    s.add_argument("--by")
+    s.add_argument("--uncheck", action="store_true")
+    s.set_defaults(fn=cmd_claim_unevidence)
     s = csub.add_parser("note")
     s.add_argument("id")
     s.add_argument("--note", required=True)
