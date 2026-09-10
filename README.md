@@ -14,7 +14,7 @@ Round 1, pilot complete (started 2026-09-02). Requirements locked (`REQUIREMENTS
 git clone https://github.com/ZhongHanLoo/deep-research-skill
 mkdir -p ~/.claude/skills && ln -s "$(pwd)/deep-research-skill/skill/deep-research" ~/.claude/skills/deep-research
 ```
-Then `/deep-research <question>` (options: `--preset quick|standard|deep`, `--mode brief|report`, `--agents N`, `--sequential`, `--yes`). Requires Python 3.10+ and `curl`; no API keys. A run writes `research-runs/<date>-<slug>/` with `report.md`, `sources.md`, `verification.md`, `claims.json`, `run.json`, per-angle notes and raw fetched text. Other harnesses: see `adapters/`.
+Then `/deep-research <question>` (options: `--preset quick|standard|deep`, `--mode brief|report`, `--agents N`, `--sequential`, `--yes`). Requires Python 3.10+ and `curl`; no API keys. A run writes `research-runs/<date>-<slug>/` with `report.md`, `sources.md`, `verification.md`, `claims.json`, `run.json`, the writer's `outline.md`, per-angle notes and raw fetched text. Other harnesses: see `adapters/`.
 
 ## How it works, in one paragraph
 
