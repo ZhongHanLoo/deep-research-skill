@@ -89,7 +89,7 @@ The other v1.1 changes behaved as designed in both runs: `--round` on every regi
 
 The sentence-shingle containment metric is weak for both workflows (prose paraphrases its source), which is why the skill also checks its verbatim quotes inside the ledger (778/778 in the pilot, 140/140 and 139/139 in the confirmation runs). It is reported because it is the protocol's step-5 metric and applies equally to a report with no ledger.
 
-## Fuller pilot, second domain: technology-3 on skill v1.1, 2026-09-10 evening
+## Fuller pilot, second and third domains: technology-3 and science-health-3 on skill v1.1, 2026-09-10 evening
 
 One `standard` run of technology-3 (HTTP caching semantics) with skill v1.1 plus the two post-tag edits of `progress.md` #44 (the writer prompt gives any presentation element the question asks for its own outline section; `grade --published ""` clears a wrong date). Round-1 brief copied verbatim from the 2026-09-03 run, so only the skill version changed; round 2 re-decomposed from the round-1 gaps (two angles: browser heuristics and bfcache, CDN stale handling and spec edges). The writer fill carried no operator line about presentation, on purpose (`progress.md` #45).
 
@@ -111,6 +111,29 @@ One `standard` run of technology-3 (HTTP caching semantics) with skill v1.1 plus
 What moved: compliance rose from 0.88 (after a 140k coverage pass) to 0.923 on the first pass, the run took a third of the wall clock, and the cost is level with the v1.0 run despite a second round-2 angle (the 2026-09-03 run had 85 central claims and 11 verifier batches; this one 60 and 8, at about 105k per batch). The presentation item that failed in 2026-09-03 passed: the writer's outline named a directive-definitions table as the presentation element the question asks for and gave it its own section and budget, with no operator line in the fill, which is what the #44 prompt rule was for. The one failure is the same recall item as on 2026-09-03: a normative rule in RFC 9111 that sat on a fetched page (the RFC was registered three times, from three mirror hosts) and was never extracted as a claim, so no writer pass could have added it; recorded as a recall failure of the adjacent-rule class, no retrieval added after judging. The judge also noted two internal inconsistencies of emphasis (a SHOULD versus "encouraged" for heuristic freshness; Chrome's bfcache change stated as settled in the table and as rolling out in the body).
 
 Also observed: the URL dedup does not see mirror hosts (rfc-editor, httpwg, datatracker), so the same RFC appears up to three times in the sources list and verifiers had to apply the same-author rule to mirrors; the same-author rule was applied three times (an RFC co-author's vendor blog, a Google-authored draft against a Chromium thread, RFC mirrors); two contradictions were real (a "proprietary to Fastly" claim against the 2001 W3C edge-architecture note; a Firefox explanation retracted in its own source's editor's note); one quote overreach was flagged by a verifier; and the new `grade --published ""` clear was used once, on a placeholder date an agent reported itself.
+
+### science-health-3, the same evening
+
+One `standard` run of science-health-3 (vitamin D, falls and fractures) with the same skill plus the two `progress.md` #46 edits (RFC-mirror folding in the ledger; a researcher-prompt line to scan a specification's section list). Round-1 brief and round-2 angles copied verbatim from the 2026-09-03 run. At the user's request round 1 ran in parallel and verification mostly one agent at a time, to stay clear of the subscription window's limit (`progress.md` #47).
+
+| | 2026-09-03 (v1.0 before any fix) | 2026-09-10 evening (v1.1 + #44 + #46) |
+|---|---|---|
+| Sources (ok) | 103 (94) | 85 (70; 15 paywalled pages unfetchable, listed but not cited) |
+| Claims corrob./single/contra. | 76/47/2 | 45/74/0 |
+| Central claims | 91 | 64 (47 + 17; per angle 5-14, none at the cap) |
+| Verifier batches | 13 | 9 (none killed) |
+| Research / verification / writing tokens | 0.73M / 1.34M / 0.17M + 0.10M fix pass + 0.26M trim pass | 0.73M / 1.07M / 0.15M + 0.04M coverage pass |
+| Generation tokens | 2.61M (22 agents) | 1.95M before the pass, 1.99M with it (16 agents, all known) |
+| Report words, first draft → final | not recorded → 1,790 | 1,969 → 1,478 (1,500 after the pass) |
+| Citation checks | 126/126 quotes, 0 errors | 119/119 quotes, 77 citations to 22 sources, 0 errors, 0 unused central |
+| URL health | 4 ARCHIVED-ONLY among 94 | 63 LIVE / 0 DEAD / 7 UNKNOWN |
+| Judge | 11/12, 0.96, after a fix pass and a trim pass | 10/12, 0.893 first pass; **11/12, 0.964** after one coverage pass |
+| `cite_audit.py`: URL valid / flagged / containment | 0.878 / 0 / 0.24 | 0.81 / 0 / 0.65 |
+| Wall clock | about 2 h | 79 min (95 with the pass), verification mostly sequential |
+
+Same final score at 24% lower cost, and the same single miss in both runs: the grade and population of the intervention a guideline body recommends instead of vitamin D, which sits on a page neither run fetched (both fetched pages refer to it in passing). Two things differed from the other domains: the first-pass score was lower because two rubric facts (a trial's dose arms; the alternative intervention) were in the ledger as `supporting` claims, which the writer's coverage list does not show (it lists unused central claims only), so one 36k coverage pass with no new retrieval lifted the score; and the writer's overshoot was +31%, back at the culture-history-3 level. The sequential mode cost no tokens and roughly 40 minutes of wall clock, and no agent was killed. Candidates recorded for the next change round: the coverage list should also name unused supporting claims that carry a number, a grade or a recommendation; the fetch gate should recognise Wiley's cookie wall (two "Cookies Turned Off" stubs were registered as `ok`); a guideline angle should fetch a companion statement that a fetched page names. The same-author rule again refused investigator press releases and co-authored commentaries as corroboration, which is why 74 claims stayed single-source: trial-specific figures often exist only in the investigators' own outputs.
+
+Across the three domains run on v1.1 (culture-history-3 three times, technology-3, science-health-3): compliance 0.92-1.00 for 1.6-2.0M Sonnet tokens per `standard` question, no agent killed in the evening runs, no fabricated URL, every quote verified at registration, and each remaining miss a fact on a page no angle fetched.
 
 ## What the pilot measured against `skill/DESIGN.md` §7
 
