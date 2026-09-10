@@ -48,7 +48,7 @@ End every sentence and every table row that carries a citation with an HTML comm
 
 ## Rules
 - Write the file with whatever file-writing means your harness allows (a shell heredoc works everywhere).
-- **Self-check before you finish:** run `python3 {{SCRIPTS}}/cite_check.py --run {{RUN}} --no-network`. Fix every `error` (untraced citations, unknown claim ids, missing markers, `over-length`), do one pass over the `central-claim-unused` list (add each item that answers part of the question, as one sentence or a table cell; skip what is redundant), and re-run until it prints `## OK`. Trust the script's word count, not your own; the length ceiling is enforced there.
+- **Self-check before you finish:** run `python3 {{SCRIPTS}}/cite_check.py --run {{RUN}} --no-network`. Fix every `error` (untraced citations, unknown claim ids, missing markers, `over-length`), do one pass over the `central-claim-unused` list and one over the `supporting-claim-unused` list (add each item that answers part of the question, as one sentence, a clause or a table cell; skip what is redundant; on 2026-09-10 two rubric facts, a trial's dose arms and a guideline body's alternative recommendation, sat unused in supporting claims), and re-run until it prints `## OK`. Trust the script's word count, not your own; the length ceiling is enforced there.
 - `unverified` and `single-source` claims may appear, labelled as such in the findings table and hedged in prose ("one source reports…"). Never present them as established.
 - Contradicted claims appear only in the disagreements section unless you state the disagreement inline.
 - Archived-only or paraphrase-only sources (see Evidence column in sources.md) are cited with that caveat ("archived snapshot of …").

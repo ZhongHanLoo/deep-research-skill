@@ -175,6 +175,15 @@ def check_report(run: ledger.Run, problems: list) -> dict:
         problems.append({"kind": "central-claim-unused", "severity": "info", "claim": c["id"], "n": c["source"],
                          "message": f"{c['id']} ({c['label']}, [{c['source']}]) is never used: {c['text'][:110]}",
                          "hint": "retrieved but unused evidence is the largest omission class; add it if it answers part of the question, else leave it"})
+    # supporting claims that carry a number, grade or recommendation and were never used (contracts section 7, 2c; 2026-09-10)
+    fact_re = re.compile(r"\d|%|\bgrade\b|\brecommend|\bMUST\b|\bSHOULD\b|\bshall\b", re.I)
+    uncited_sup = [c for c in claims if c["importance"] == "supporting" and c["label"] in ("corroborated", "single-source")
+                   and c["id"] not in used and fact_re.search(c.get("text", "") + " " + c.get("quote", ""))]
+    stats["uncited_supporting"] = [c["id"] for c in uncited_sup]
+    for c in uncited_sup:
+        problems.append({"kind": "supporting-claim-unused", "severity": "info", "claim": c["id"], "n": c["source"],
+                         "message": f"{c['id']} (supporting, {c['label']}, [{c['source']}]) is never used and carries a number, grade or recommendation: {c['text'][:110]}",
+                         "hint": "a rubric fact can sit in a supporting claim; add it as a clause or a table cell if it answers part of the question, else leave it"})
     contradicted_sources = {c["source"] for c in claims if c["label"] == "contradicted"}
     for n in sorted(contradicted_sources & cited):
         for p in paras:
@@ -317,7 +326,7 @@ def main(argv=None) -> int:
         if r.get("words_before_sources") is not None:
             print(f"- Length: {r['words_before_sources']} words before Sources (markers excluded)")
         if r.get("uncited_central") is not None:
-            print(f"- Coverage: {len(r['uncited_central'])} verified central claims never used in the report (listed under Problems as info)")
+            print(f"- Coverage: {len(r['uncited_central'])} verified central claims never used in the report, {len(r.get('uncited_supporting', []))} unused supporting claims carrying a number, grade or recommendation (listed under Problems as info)")
         print(f"- Health: {h if h else 'skipped (--no-network)'}")
         print()
         print("## Problems" if problems else "## Problems: none")

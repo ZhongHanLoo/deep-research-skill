@@ -66,7 +66,8 @@ BLOCK_MARKERS = ("attention required! | cloudflare", "sorry, you have been block
                  "javascript is disabled in your browser", "please enable cookies",
                  "performing security verification", "verifies you are not a bot",
                  "security service to protect against malicious bots", "checking if the site connection is secure")
-CONSENT_MARKERS = ("before you continue", "we use cookies and data", "manage your privacy settings", "accept all cookies")
+CONSENT_MARKERS = ("before you continue", "we use cookies and data", "manage your privacy settings", "accept all cookies",
+                   "cookies are disabled for this browser", "requires cookies for authentication")  # the last two: Wiley Online Library, 2026-09-10
 
 _last_archive_call = 0.0
 

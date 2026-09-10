@@ -17,7 +17,18 @@ PROSE = ("In July 1799, a group of soldiers stumbled upon an object that changed
 SIDEBAR_HEAVY = NAV_ONLY + "\n\n" + PROSE  # documentation page: big menu, but real prose under it
 
 
+WILEY_WALL = ("Journal\n\nArticles\n\nActions\n\nTools\n\nFollow journal\n\nCookies disabled\n\n"
+              "Cookies are disabled for this browser. Wiley Online Library requires cookies for authentication and use of other site features; "
+              "therefore, cookies must be enabled to browse the site. Detailed information on how Wiley uses cookies can be found in our Privacy Policy.\n\n"
+              "Log in to Wiley Online Library\n\nNEW USER >\n\nINSTITUTIONAL LOGIN >\n\nChange Password\n\nPassword Changed Successfully\n\n"
+              "Your password has been changed\n\nCreate a new account\n\nReturning user\n\nForgot your password?\n\nEnter your email address below.\n\nPlease check your email\n" * 2)
+
+
 class GateTest(unittest.TestCase):
+    def test_wiley_cookie_wall_is_consent_wall(self):
+        self.assertGreaterEqual(len(WILEY_WALL), fetch.MIN_CHARS)
+        self.assertEqual(fetch.gate(WILEY_WALL), "failed:consent-wall")
+
     def test_nav_only_fails(self):
         self.assertGreaterEqual(len(NAV_ONLY), fetch.MIN_CHARS)
         share, words = fetch.nav_stats(NAV_ONLY)

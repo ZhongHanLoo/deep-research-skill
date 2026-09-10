@@ -36,9 +36,11 @@ class CiteCheckTest(unittest.TestCase):
             claim("c002", 1, "Growth was driven by three factors that analysts consider durable over the coming decade extra"),  # shingle-tolerant
             claim("c003", 1, "the market grew to 4.2 billion dollars last year according to analysts"),  # paraphrase -> fail
             claim("c004", 2, "Other page", contradicts=[{"source": 3, "note": "says 3bn", "by": "v"}]),
+            dict(claim("c005", 1, "reached USD 4.2 billion in 2024"), importance="supporting", checked=True, label="single-source", text="Market was USD 4.2 billion in 2024."),
+            dict(claim("c006", 1, "according to the annual report"), importance="supporting", checked=True, label="single-source", text="The figure comes from the annual report."),
         ]
         (self.d / "sources.json").write_text(json.dumps({"next_id": 5, "sources": sources}))
-        (self.d / "claims.json").write_text(json.dumps({"next_id": 5, "claims": claims}))
+        (self.d / "claims.json").write_text(json.dumps({"next_id": 7, "claims": claims}))
         (self.d / "run.json").write_text(json.dumps({"question": "q", "preset": "quick", "mode": "brief"}))
         (self.d / "report.md").write_text(
             "# R\n\n## Summary\nMarket size [1]. Range cite [2-3]. Multi [1, 3][2]. Unknown [9].\n\n"
@@ -58,7 +60,9 @@ class CiteCheckTest(unittest.TestCase):
         code, out = self.run_cc()
         kinds = [(p["kind"], p.get("n"), p.get("claim")) for p in out["problems"]]
         self.assertEqual(code, 1)
-        self.assertEqual(out["quotes"], {"checked": 4, "verified": 3, "failed": 1, "unknown": 0})
+        self.assertEqual(out["quotes"], {"checked": 6, "verified": 5, "failed": 1, "unknown": 0})
+        self.assertIn(("supporting-claim-unused", 1, "c005"), kinds)  # unused supporting claim carrying a number
+        self.assertNotIn(("supporting-claim-unused", 1, "c006"), kinds)  # unused supporting claim without a number, grade or recommendation
         self.assertIn(("quote-not-in-source", 1, "c003"), kinds)
         self.assertIn(("unknown-citation", 9, None), kinds)
         self.assertNotIn(("unknown-citation", 7, None), kinds)  # inside code fence
