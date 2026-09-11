@@ -192,6 +192,21 @@ The protocol's calibration step (ten reports hand-graded by a person; `eval/READ
 
 The two lenient passes are the same item in two reports: policy-law-3 r4 (weight 3), whose second half (a specific point about when a Chevron-era holding may be overruled) is absent from the report; Opus wrote "not spelled out" in its justification and passed anyway. The same half is absent from the other two judged policy-law-3 reports, so every policy-law-3 compliance in the tables above carries that pass: **0.897 as judged is 0.793 adjusted, on v1.0 and on the current skill alike**, and the five-domain range is 0.79-1.00 adjusted rather than 0.90-1.00. The paired comparison on that question is unchanged. No other lenient pass surfaced; the check is disagreement-driven, so a pass both judges share and both got wrong would not be caught by it.
 
+## First post-cutoff question: technology-1 on skill v1.2 (2026-09-11)
+
+Every run above is on the five `stable` questions. Ten of the fifteen questions are `post-cutoff` (facts that postdate the generator's training and must come from the web); the first of them ran on 2026-09-11, a technology question about a schedule set in 2025 with steps that landed in 2026, whose primary sources are standards-body records, CA documentation and IETF pages.
+
+| | technology-1 (post-cutoff) | technology-3 (stable, the day before, same skill) |
+|---|---|---|
+| Sources / claims / central | 63 / 105 / 50 | 77 / 131 / 60 |
+| Agents (killed) | 14 (0) | 15 (0) |
+| Generation tokens | **1.50M** | 1.64M |
+| Citation checks | 105/105 quotes, 128 citations, 0 errors | 131/131, 0 errors |
+| `cite_audit.py`: validity / containment | 0.95 / 0.30 | 0.92 / 0.07 |
+| Compliance | 0.846 first pass, **0.923** after one coverage pass | 0.923 first pass |
+
+The two first-pass misses were writer compression of facts already in corroborated claims (a product's general-availability date and two scheduled dates), restored by one writer pass without new retrieval; the remaining miss is a date on a fetched page that no researcher extracted, the same class as every stable-question miss. No freshness failure occurred: every dated fact came from a primary page fetched during the run, the standards-status distinction the question was designed to trip on was stated correctly, and no needed host failed to fetch. One question is one data point; the other nine post-cutoff questions are unrun.
+
 ## Experiment after the pilot: a gap hunter for the adjacent-passage class (2026-09-11)
 
 Every rubric miss on the current skill is a passage on a fetched page that no researcher extracted. Because each run caches its fetched page text, a fix could be tested offline: a "gap hunter" agent that runs once after research with the question, the brief, the claims list and grep access to the raw cache, and lists uncovered statements with verbatim quotes (`eval/experiments/gap-hunter.md`; variant 2, `gap-hunter-v2.md`, first writes the rubric a domain expert would use, then hunts for its items). Eight Sonnet agents over the four current-skill run folders, 110-156k tokens each (about 7% of a run). Result: 56 candidate facts, 55 quoted verbatim from the cache, several of real value (a trial absent from a ledger, a predecessor limit the writer had declared missing, an undated cited RFC), but only 1 of the 4 known rubric misses caught by variant 1 and 0 of 4 by variant 2. The checklist, not the reading, is the bottleneck: neither the question, the brief nor a model-written expert rubric produced the specific adjacent rule the human rubric author held essential. Not applied to the skill; recorded in `decisions/backlog.md` as an optional completeness stage for the `deep` preset.
