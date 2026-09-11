@@ -153,7 +153,30 @@ One `standard` run of policy-law-3 (judicial deference to agency statutory inter
 
 Same final score at 13% lower cost, with the same single miss in both runs: the passage of the judgment that bounds the holding (which deferential standards survive for agency factfinding and policy) sits in the fetched slip opinion and was extracted as a claim in neither run, although three prompt rules now ask for every holding and carve-out in cited sections. The first-pass miss that did not recur from 2026-09-04 was a writer inversion (a litigant's burden stated backwards against the ledger's own claims), fixed in one 39k pass with no new retrieval. The new supporting-claim coverage list surfaced two rubric-relevant facts on its first use. The audit's five "possibly fabricated" flags were all pages fetched live and `ok` in the ledger, so the flag measured that night's HEAD and archive lookups. Candidates recorded: a question-coverage check before writing (for each numbered part of the question, which claims answer it), since the remaining misses in two domains are passages on fetched pages that no prompt rule reached; and BAILII's block page as a gate marker.
 
-Across the four domains run on v1.1 (culture-history-3 three times, technology-3, science-health-3, policy-law-3): compliance 0.90-1.00 for 1.6-2.0M Sonnet tokens per `standard` question (v1.0 on the same briefs: 0.88-1.00 for 1.5-2.6M), no agent killed in the evening runs, no fabricated URL in the ledger, every quote verified at registration, and each remaining miss a fact on a page no angle fetched or a passage on a fetched page that no researcher extracted.
+### business-finance-3, the next night (2026-09-11)
+
+One `standard` run of business-finance-3 (FDIC deposit insurance against SIPC customer protection) with the same skill plus the `progress.md` #50 edits (the Anubis block page in the fetch gate; the writer's outline opens with a question-coverage table). Round-1 brief copied verbatim from the 2026-09-04 run; round 2 re-decomposed from the round-1 state, as on 2026-09-04, and the re-decomposition lost one hypothesis line (see below). Prompts filled by the new `eval/fill_prompts.py`. The user paced the launches in waves of five agents with two holds between them (`progress.md` #51).
+
+| | 2026-09-04 (v1.0 with the central cap, no stop rule) | 2026-09-11 (v1.1 + #44 + #46 + #48 + #50) |
+|---|---|---|
+| Sources (ok) | 116 (110) | 75 (73; 2 guessed URLs registered possibly-fabricated, uncited) |
+| Claims corrob./single/contra. | 99/95/0 | 66/103/0 |
+| Central claims | 100 | 73 (47 + 26; per angle 10-15, none at the cap) |
+| Verifier batches | 12 plus rebuilds after a session-limit kill | 10 (none killed) |
+| Research / verification / writing tokens | about 0.9M known / not separable / about 0.3M + coverage pass | 0.68M / 0.97M / 0.22M |
+| Generation tokens | 2.10M known (25 agents + 6 killed) | 1.87M (17 agents, all known) |
+| Report words, first draft → final | not recorded → 1,799 | 2,149 → 1,567 |
+| Citation checks | 194/194 quotes, 0 errors | 169/169 quotes, 154 citations to 57 sources, 0 errors, 0 unused central; 39 unused supporting listed, 3 added |
+| URL health | 86 LIVE / 15 ARCHIVED-ONLY / 3 DEAD / 6 UNKNOWN | 64 LIVE / 0 DEAD / 9 UNKNOWN |
+| Judge | 11/12, 0.92 first pass; 12/12, 1.00 after a coverage pass | **11/12, 0.92 first pass**; no pass possible (the miss is in no claim) |
+| `cite_audit.py`: URL valid / flagged / containment | 0.931 / 4 / 0.25 | 0.947 / 0 / 0.23 |
+| Wall clock | 102 min | 74 min, of which about 25 min were holds for the user |
+
+Same first-pass score at 11% lower cost, no agent killed, and the question-coverage table did what the #50 rule asked: from the prompt alone the writer opened its outline with twelve rows (the four numbered parts split by regime plus the brief's three sub-questions), marked nine full with claim ids and three as gaps before any prose, put the gaps into "What this report could not find" and named them in its final message. None of the three gaps was a rubric item, so no targeted pass was warranted. The one miss is a contrast the question does not name and the rubric expects (the FDIC's status as an independent government agency against SIPC's non-profit, non-governmental status); the phrase is on six fetched pages and in no claim, so it is the adjacent-passage class once more, and the coverage table's rows (question parts and brief sub-questions) could not reach it. The paired comparison on this question is weaker than the other four: the 2026-09-04 round-2 brief carried "FDIC's own pages state it is an independent agency" as a hypothesis line, its researcher extracted it and the report opened with it; tonight's re-decomposed round-2 brief did not carry the line. The coverage pass that took the 2026-09-04 run to 1.00 added facts that were already in its ledger.
+
+Also observed: a round-2 researcher registered 6 content-bearing sources against the target of 4 (never exceed 5), the first overshoot in the v1.1 runs (it kept a statute section fetched under a misleading title and reported the overshoot itself); the per-source central cap demoted intended-central claims on three sources shared between angles, and each researcher reported the demotion correctly instead of working around it; verification corroborated 66 of 73 central claims, mostly from statute, regulation and Federal Register text on law.cornell.edu, ecfr.gov, congress.gov and federalregister.gov, and left the rest single-source with the search trail noted (secondary pages that restate the agency's own page, a Unified Agenda timetable field no other page quotes); the same-author rule was applied three times (a rewrite whose footnote cites the FDIC page, a CNN piece quoting CFPB, a law-firm sentence tracking FDIC's wording).
+
+Across the five domains run on v1.1 (culture-history-3 three times, technology-3, science-health-3, policy-law-3, business-finance-3): compliance 0.90-1.00 for 1.6-2.0M Sonnet tokens per `standard` question (v1.0 on the same briefs: 0.88-1.00 for 1.5-2.6M), no agent killed since the evening of 2026-09-10, no fabricated URL in the ledger, every quote verified at registration, and each remaining miss a fact on a page no angle fetched or a passage on a fetched page that no researcher extracted.
 
 ## What the pilot measured against `skill/DESIGN.md` §7
 
