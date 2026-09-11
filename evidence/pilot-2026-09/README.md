@@ -44,24 +44,29 @@ Of the 29 URLs flagged across the five reports, 10 were fetched with status `ok`
 
 **Cost structure at `standard`:** research 420-870k tokens, verification 790k-1.5M (about half of every run), writing 210-530k; 1.5-2.6M per question; judging 50-63k Opus tokens per report. A subscription session limit was hit at roughly 3.5M Sonnet tokens per five-hour window on 2026-09-03 (twice) and 2026-09-04; the ledger survives killed agents and `eval/make_batches.py` relaunches only what is unchecked.
 
-## Stage C: the Claude Code built-in `/deep-research` (workflow A), 2026-09-04 to 2026-09-05
+## Stage C: the Claude Code built-in `/deep-research` (workflow A), 2026-09-04 to 2026-09-05 and 2026-09-11
 
-The built-in workflow (Claude Code 2.1.258; architecture described in `research/prior-art/README.md`) was run from the session as `Workflow({name: 'deep-research', args: <question>})` on culture-history-3, the same question as the skill's freshest run.
+The built-in workflow (architecture described in `research/prior-art/README.md`; the script the harness persists on launch was identical between Claude Code 2.1.258 and 2.1.263 apart from its `meta` literal) was run from the session as `Workflow({name: 'deep-research', args: <question>})` on two of the five stable questions, each paired with the skill's run of the same question. Constants untouched (3 votes per claim, 2 refutations to kill, 15 fetch slots, 25 claims verified). The report is a mechanical Markdown rendering of the JSON the workflow returns, judged by the same Opus judge and rubric as the skill's report.
 
-| | Built-in (A) | Skill (B) |
-|---|---|---|
-| Rubric passes | 7/12 | 12/12 |
-| Compliance | **0.655** | **1.00** |
-| Tokens, completing run | 1.51M (100 agents, 11.5 min; search and fetch stages replayed from cache) | 1.85M (16 agents, 56 min) |
-| Tokens, all attempts | **7.95M** over three attempts in three windows | 1.85M in one |
-| Sources fetched / claims / verified | 18 / 89 / 25 (23 confirmed, 2 refuted, 9 dropped for budget) | 64 / 158 / 158 (48 corroborated, 107 single-source, 3 contradicted) |
-| Report | 8 merged findings, caveats, open questions, refuted list (JSON, rendered to Markdown mechanically) | 1,770-word report with claim markers |
-| `cite_audit.py` (same yardstick): URL validity | 1.00 (18 URLs) | 0.94 (64 URLs; 4 unreachable at audit time, all fetched live during the run) |
-| `cite_audit.py`: sentence-shingle containment | 0.14 (43 citing sentences) | 0.15 (64) |
+**Model.** The built-in script sets no model, so its agents inherit the session model. The 2026-09-04/05 run therefore ran on Claude Fable (established 2026-09-11 from the agent transcripts; recorded at the time as "harness default"). For the 2026-09-11 run a copy of the persisted script was given `model: "sonnet"` at its five `agent()` call sites and nothing else was changed, so both workflows generated with Sonnet as the protocol requires; a first launch that had inherited Fable was abandoned after 19 agents and is not counted.
 
-`eval/score.py` on the one paired question: B − A = +0.345 (n = 1, so no interval). The built-in missed: the scripts-versus-languages distinction, the month of the discovery, the historiography of the priority dispute (its own caveat says those claims "were not captured"), hence one of the four requested elements, and a timeline. Its 23 confirmed claims came 17 from one institution's pages and 4 from one author's primary texts; verification of the top 25 of 89 claims with three votes each is where its budget goes.
+| | culture-history-3: built-in (A) | skill (B) | technology-3: built-in (A) | skill (B) |
+|---|---|---|---|---|
+| Run | 2026-09-05, Fable agents, third attempt | 2026-09-04, v1.0 | 2026-09-11, Sonnet agents, one attempt | 2026-09-10, v1.1 + post-tag edits |
+| Rubric passes | 7/12 | 12/12 | 7/12 | 11/12 |
+| Compliance | **0.655** | **1.00** | **0.577** | **0.923** |
+| Tokens, completing run | 1.51M (100 agents, 11.5 min; search and fetch replayed from cache) | 1.85M (16 agents, 56 min) | 4.65M (109 agents, 8.2 min, fresh) | 1.64M (15 agents, 39 min) |
+| Tokens, all attempts | 7.95M over three attempts in three windows | 1.85M in one | 4.65M in one (a paused Fable launch not counted) | 1.64M in one |
+| Sources fetched / claims / verified | 18 / 89 / 25 (23 confirmed, 2 refuted, 9 dropped for budget) | 64 / 158 / 158 | 26 / 120 / 25 (24 confirmed, 1 refuted, 8 dropped for budget) | 77 / 131 / 131 (60 central) |
+| Report | 8 merged findings, caveats, open questions, refuted list | 1,770-word report with claim markers | 8 merged findings, caveats, open questions, refuted list | report with claim markers |
+| `cite_audit.py`: URL validity | 1.00 (18 URLs) | 0.94 (64) | 1.00 (26) | 0.92 (77; the non-ok rows are bot-walled or declared-unfetchable pages) |
+| `cite_audit.py`: sentence-shingle containment | 0.14 (43 citing sentences) | 0.15 (64) | 0.05 (21) | 0.07 (77) |
 
-**Cost finding.** A fresh built-in run (about 100 agents, 3.7M tokens) did not fit inside one subscription window on this account: attempts 1 and 2 (3.74M and 2.70M tokens) died at the verify and synthesis steps on the session limit; attempt 3 completed only because the workflow resume cache replayed the search and fetch stages. The two failed attempts cost 6.44M tokens for no report. On this evidence the user stopped the baseline at one question (decision 2026-09-05, `progress.md` #41): each further question would cost about two windows and 5-6M tokens, and the design changes queued from Stage B will change the skill before a fuller pilot.
+`eval/score.py` over the two paired questions: B − A = +0.345 and +0.346, mean +0.345, B wins 2 of 2 (n = 2, so no interval is reported). The same holds against the skill's later v1.1 run of culture-history-3 (1.00).
+
+**What the built-in missed, and why.** On culture-history-3: the scripts-versus-languages distinction, the month of the discovery, the historiography of the priority dispute (its own caveat says those claims "were not captured"), hence one of the four requested elements, and a timeline; its 23 confirmed claims came 17 from one institution's pages and 4 from one author's primary texts. On technology-3 it is accurate on everything the RFC texts state (dates, predecessors, section numbers, the directive definitions, the split between RFC 9111, RFC 5861 and RFC 8246) and fails every item that needs a vendor or browser page (no browser or CDN deviation, no RFC 9213, no Authorization rule, deliverables 3 beyond Vary and 4 declared undelivered in its own caveat). The workflow's journal shows why: its search and fetch stages did reach two Cloudflare docs pages, two Fastly docs pages and two MDN pages (21 central claims between them, graded primary or secondary), but the extractors marked 81 of 120 claims central, 50 of those from `primary` sources, and only 25 are verified, ranked by importance, then source quality, then fetch order. All 25 slots went to IETF pages; no vendor or browser claim was ever voted on, and the synthesis uses confirmed claims only. Both baselines have the same shape: a fixed verify budget, not search or fetch, decides coverage. The skill batches every central claim to a verifier (60 of 60 on this question), which is where its token budget goes instead.
+
+**Cost finding, updated.** A fresh built-in run is 100-110 agents. With agents on Fable (2026-09-04) it did not fit inside one subscription window: attempts 1 and 2 (3.74M and 2.70M tokens) died at the verify and synthesis steps, and attempt 3 completed only because the resume cache replayed the search and fetch stages; the two failed attempts cost 6.44M tokens for no report. With agents on Sonnet (2026-09-11) the fresh run completed in one window at 4.65M tokens in 8.2 minutes, so the per-window limit is not a fixed token count across models. Per completing run the built-in costs 2.5-2.8 times the skill's tokens for a fresh run (4.65M vs 1.64M) and delivers a compliance 0.35 lower on both questions. On 2026-09-05 the user stopped the baseline at one question (`progress.md` #41); the second question was added on 2026-09-11 (`progress.md` #53) once the skill was at v1.2, and whether n = 2 closes the baseline for this round is the user's next decision.
 
 ## Confirmation runs after the changes (skill v1.1), 2026-09-10
 
