@@ -1,5 +1,7 @@
 # Backlog: candidates for the next skill version (v1.3), recorded with their evidence
 
+**v1.3 package (decided 2026-09-11, progress #62; not yet applied):** one prompt change set and one confirmation run. (a) Candidate C1 from `decisions/adjacent-passage-class.md`: a definitional-sentence extraction line in `prompts/researcher.md` (registered as `supporting`), offline test 4 of 5 pages against 2 of 5 for the control. (b) Item 1 below, the stop-rule wording. (c) Item 3 below, the judge-prompt multi-part line, applied before the first judge call of the run and any later re-judge. Contract unchanged by (a) and (b); (c) is evaluation tooling. Then one `standard` confirmation run on a stable question (about 1.5-1.9M Sonnet tokens; science-health-2 is the cheapest run to date and its one miss is a C1 target, business-finance-3's miss is a C1 target too) judged with the new judge line, compared with its earlier run re-judged the same way. Not started: the user chose to open it on a later day.
+
 Dated entries; each names where the evidence is in `progress.md`. Nothing here is applied. Applying a prompt or script change means: contract first (`skill/deep-research/reference/contracts.md`), then code, then the four test suites, then one confirmation run on a stable question (about 1.9M Sonnet tokens).
 
 ## Skill
