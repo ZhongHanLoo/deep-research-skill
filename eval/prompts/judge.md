@@ -13,7 +13,7 @@ Report:
 {{REPORT}}
 --- END REPORT ---
 
-For every rubric item, decide `pass: true` only if the report states the fact or does the thing the item describes, explicitly and correctly; a vague or partial mention is `false`. Give a one-line justification quoting or pointing to the report passage that decides it. Then answer the holistic questions.
+For every rubric item, decide `pass: true` only if the report states the fact or does the thing the item describes, explicitly and correctly; a vague or partial mention is `false`. An item with several parts (joined by "and", a semicolon or a list) passes only if every part is present and correct; if your own justification notes that a part is missing or not spelled out, the item is `false`. Give a one-line justification quoting or pointing to the report passage that decides it. Then answer the holistic questions.
 
 Return only this JSON:
 ```json
