@@ -55,5 +55,5 @@ evidence/        # public results: smoke-runs/ (one full run folder), pilot-2026
 skill/DESIGN.md  # v1 design with evidence tags
 skill/deep-research/   # the portable skill (v1.1): SKILL.md, prompts/, scripts/{fetch,ledger,cite_check,textmatch}.py, reference/contracts.md, tests/{test_ledger,test_cite_check,test_fetch_gate}.py + integration.sh
 adapters/        # per-harness notes (claude-code/ tested; hermes.md, codex.md untested)
-decisions/       # ADR-style decision records (optional; may fold into progress.md)
+decisions/       # backlog.md: open candidates for the next skill version with their evidence (decisions themselves live in progress.md)
 ```

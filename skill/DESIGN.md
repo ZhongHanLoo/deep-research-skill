@@ -91,7 +91,7 @@ Kept from the built-in: quoted falsifiable claims from fetched pages; structured
 4. Quote-containment failure rate of model-reported quotes.
 5. Whether fetch ≥ verify allocation raises rubric recall without hurting citation support.
 
-Measured in the September 2026 pilot: see `evidence/pilot-2026-09/README.md` (section "What the pilot measured against §7") and `progress.md` #35-#41. Headline: five-question mean compliance 0.95 at 1.5-2.6M Sonnet tokens per question; the built-in scored 0.655 on the one paired question at 7.95M tokens over three attempts; verification is half of every run and the central-claim count is the cost lever.
+Measured in the September 2026 pilot: see `evidence/pilot-2026-09/README.md` (section "What the pilot measured against §7") and `progress.md` #35-#41 and #53-#54. Headline: five-question mean compliance 0.95 as judged on v1.0 at 1.5-2.6M Sonnet tokens per question, 0.90-1.00 as judged (0.79-1.00 after the policy-law-3 judge correction) on v1.2 at 1.6-2.0M; the built-in scored 0.655 and 0.577 on the two paired questions (7.95M tokens over three attempts, then 4.65M in one) and lost the same way both times: its fixed 25-claim verify cut decides coverage; verification is half of every skill run and the central-claim count is the cost lever.
 
 ## 8. Not in v1
 

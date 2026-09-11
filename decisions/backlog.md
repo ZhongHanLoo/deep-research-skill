@@ -1,0 +1,17 @@
+# Backlog: candidates for the next skill version (v1.3), recorded with their evidence
+
+Dated entries; each names where the evidence is in `progress.md`. Nothing here is applied. Applying a prompt or script change means: contract first (`skill/deep-research/reference/contracts.md`), then code, then the four test suites, then one confirmation run on a stable question (about 1.9M Sonnet tokens).
+
+## Skill
+
+1. **Stop-rule wording for off-target pages** (2026-09-11, progress #51 candidate 3). A researcher kept a sixth content-bearing source because a page fetched under a misleading title turned out off-target after claims were registered from it. The rule in `prompts/researcher.md` ("stop at the target; never exceed target + 1; unfetchable, nav-only or duplicate pages do not count") could say that a page counts once any claim is registered from it, whatever its title promised. Cost: one line; needs a confirmation run only if the line changes researcher behaviour elsewhere.
+2. **The adjacent-passage class the coverage table cannot reach** (2026-09-11, progress #51 candidate 1; the misses of #45, #47, #49, #51). Every remaining rubric miss on the current skill is a passage on a fetched page that no researcher extracted, and the writer's question-coverage table (v1.2) can only flag gaps the question names. The one member found so far is a contrast the question implies but does not name. No general fix is designed; a question-specific fix (a brief sub-question) is the operator's, and the 2026-09-04 business-finance-3 brief did it by accident. Ideas not yet evaluated: a second extraction pass over already-fetched pages against the brief's hypothesis lines; a verifier task "what does this page say that no claim covers" on primary sources.
+
+## Evaluation tooling
+
+3. **Judge prompt: multi-part items** (2026-09-11, progress #54). The Opus judge's only errors in 120 adjudicated items were two lenient passes on one weight-3 item with two parts, where its own justification said the second part was "not spelled out". A line in `eval/prompts/judge.md` ("an item with several parts passes only if every part is present") would close that, but changing the judge mid-pilot changes comparability: apply at the start of the next round and re-judge any report carried over. The rubrics themselves stay as written (protocol rule).
+4. **Human calibration** (protocol step 10; `eval/private/calibration/pack/`, ten sheets, about 40k words). Built 2026-09-11, ungraded; the model-only substitute (quote check, second judge, adjudication) is in `evidence/pilot-2026-09/README.md`. Grade it whenever a person has 3-4 hours; `make_calibration_pack.py collect` then `score.py --calibration`.
+
+## Baseline
+
+5. **Built-in baseline on Sonnet for culture-history-3** (progress #53). The n=1 baseline of 2026-09-05 ran on Fable by inheritance; a Sonnet re-run (about 4.6M tokens) would make the pair like-for-like. Not recommended now: the Fable-generated score is, if anything, favourable to the built-in, and the second question (Sonnet) lost by the same margin for the same structural reason.
