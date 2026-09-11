@@ -192,20 +192,21 @@ The protocol's calibration step (ten reports hand-graded by a person; `eval/READ
 
 The two lenient passes are the same item in two reports: policy-law-3 r4 (weight 3), whose second half (a specific point about when a Chevron-era holding may be overruled) is absent from the report; Opus wrote "not spelled out" in its justification and passed anyway. The same half is absent from the other two judged policy-law-3 reports, so every policy-law-3 compliance in the tables above carries that pass: **0.897 as judged is 0.793 adjusted, on v1.0 and on the current skill alike**, and the five-domain range is 0.79-1.00 adjusted rather than 0.90-1.00. The paired comparison on that question is unchanged. No other lenient pass surfaced; the check is disagreement-driven, so a pass both judges share and both got wrong would not be caught by it.
 
-## First post-cutoff question: technology-1 on skill v1.2 (2026-09-11)
+## Post-cutoff questions on skill v1.2 (2026-09-11): technology-1 and science-health-2
 
-Every run above is on the five `stable` questions. Ten of the fifteen questions are `post-cutoff` (facts that postdate the generator's training and must come from the web); the first of them ran on 2026-09-11, a technology question about a schedule set in 2025 with steps that landed in 2026, whose primary sources are standards-body records, CA documentation and IETF pages.
+Every run above is on the five `stable` questions. Ten of the fifteen questions are `post-cutoff` (facts that postdate the generator's training and must come from the web). Two ran on 2026-09-11 on skill v1.2 unchanged: a technology question about a schedule set in 2025 with steps that landed in 2026 (primary sources: standards-body records, CA documentation and IETF pages), and a public-health question about a national elimination-status determination pending in 2026 (primary sources: CDC surveillance and coverage pages, PAHO statements and a regional framework document, state health department releases). The second was chosen for the freshness traps its design carries: a surveillance count revised weekly that needs an as-of date, a review date that an agency moved after first announcing it, and three status statements (a region's, a trigger country's, and the country under review) that stale answers conflate.
 
-| | technology-1 (post-cutoff) | technology-3 (stable, the day before, same skill) |
-|---|---|---|
-| Sources / claims / central | 63 / 105 / 50 | 77 / 131 / 60 |
-| Agents (killed) | 14 (0) | 15 (0) |
-| Generation tokens | **1.50M** | 1.64M |
-| Citation checks | 105/105 quotes, 128 citations, 0 errors | 131/131, 0 errors |
-| `cite_audit.py`: validity / containment | 0.95 / 0.30 | 0.92 / 0.07 |
-| Compliance | 0.846 first pass, **0.923** after one coverage pass | 0.923 first pass |
+| | technology-1 (post-cutoff) | science-health-2 (post-cutoff) | technology-3 (stable, the day before, same skill) |
+|---|---|---|---|
+| Sources / claims / central | 63 / 105 / 50 | 47 / 122 / 44 | 77 / 131 / 60 |
+| Agents (killed) | 14 (0) | 13 (0) | 15 (0) |
+| Generation tokens | **1.50M** | **1.46M** | 1.64M |
+| Citation checks | 105/105 quotes, 128 citations, 0 errors | 122/122 quotes, 86 citations, 0 errors | 131/131, 0 errors |
+| `cite_audit.py`: validity / containment | 0.95 / 0.30 | 0.92 / 0.47 | 0.92 / 0.07 |
+| Compliance | 0.846 first pass, **0.923** after one coverage pass | **0.929** first pass (no pass) | 0.923 first pass |
+| Wall clock | 43 min incl. the pass | 45 min | 39 min |
 
-The two first-pass misses were writer compression of facts already in corroborated claims (a product's general-availability date and two scheduled dates), restored by one writer pass without new retrieval; the remaining miss is a date on a fetched page that no researcher extracted, the same class as every stable-question miss. No freshness failure occurred: every dated fact came from a primary page fetched during the run, the standards-status distinction the question was designed to trip on was stated correctly, and no needed host failed to fetch. One question is one data point; the other nine post-cutoff questions are unrun.
+On technology-1 the two first-pass misses were writer compression of facts already in corroborated claims (a product's general-availability date and two scheduled dates), restored by one writer pass without new retrieval; the remaining miss is a date on a fetched page that no researcher extracted. On science-health-2 the one miss is a threshold sentence on the very CDC page from which nine central claims were registered, which no researcher extracted because neither the question nor the brief named it (the adjacent-passage class again; recorded as a recall failure, no retrieval added after judging). No freshness failure occurred on either question: every dated fact came from a primary page fetched during the run, the moved review date appears only as superseded history, the surveillance count carries its as-of date and a provisional flag, the three status statements are kept distinct, and the deaths a state health department had announced but the national confirmed-only line had not yet counted were reported with the lag explained, because the round-2 brief asked for state sources as the question does. No needed host failed to fetch (the JavaScript-heavy CDC pages came through the Jina reader rung). Two post-cutoff questions stand at 0.923 and 0.929 for 1.46-1.50M tokens, inside the stable-question range and at its cheap end; the other eight post-cutoff questions are unrun.
 
 ## Experiment after the pilot: a gap hunter for the adjacent-passage class (2026-09-11)
 
