@@ -3,7 +3,7 @@ name: deep-research
 description: Use when the user wants a researched, cited answer or report that needs web sources — market, technical, scientific, policy or historical questions, comparisons, "what does the evidence say", state-of-the-art briefs. Not for questions about a codebase or answerable from memory.
 license: MIT
 metadata:
-  version: 1.2.0
+  version: 1.3.0
   homepage: https://github.com/ZhongHanLoo/deep-research-skill
 ---
 

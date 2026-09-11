@@ -45,7 +45,7 @@ from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import textmatch  # noqa: E402
 
-SKILL_VERSION = "1.2.0"
+SKILL_VERSION = "1.3.0"
 IMPORTANCE = ("central", "supporting", "tangential")
 GRADES = ("primary", "secondary", "blog", "forum", "unreliable")
 LABELS = ("contradicted", "corroborated", "single-source", "unverified")
