@@ -236,11 +236,25 @@ Three changes were applied on 2026-09-11 (progress #63; `decisions/backlog.md` p
 | `cite_audit.py`: validity / containment | 0.97 / 0.19 (one 404 page a verifier registered is flagged; graded unreliable, uncited) | 0.95 / 0.23 |
 | Wall clock | 45 min incl. the pass | 74 min |
 
+| | v1.3 (technology-3, 2026-09-15) | v1.2 + edits, 2026-09-10, re-judged |
+|---|---|---|
+| Compliance | **0.923** first pass and after one coverage pass | 0.923 |
+| Generation tokens | 1.71M (research 605k / verification 881k / writer 222k) | 1.64M (625k / 836k / 175k) |
+| Agents (killed) | 15 (0) | 15 (0) |
+| Sources / claims / central | 56 / 141 / 50 | 77 / 131 / 60 |
+| Corroborated / single-source / contradicted | 36 / 102 / 3 | 45 / 84 / 2 |
+| Report words, first draft → final | 2,398 → 1,721 (1,761 after the pass) | 1,790 → 1,510 |
+| Citation checks | 141/141 quotes, 77 citations, 0 errors | 131/131, 127 citations, 0 errors |
+| `cite_audit.py`: validity / containment | 0.95 / 0.17 (0 fabricated) | 0.92 / 0.07 (0 fabricated) |
+| Wall clock | 41 min incl. the pass | 42 min |
+
 **On the public-health question,** the one item the v1.2 report failed (a coverage figure never set against the community-protection threshold) passes on v1.3, and one item that had passed on a single limb now passes on both. Attribution is stated carefully: the threshold entered the ledger through a different angle registering a named expert's statement from a news report, not through the CDC page sentence the C1 line was written for, which the surveillance researcher again left unregistered under cap pressure; the line names exactly that kind of sentence, but with one run per arm and different source sets the pass cannot be attributed to the line alone. Cost rose 19%: nine more central claims (a source contradiction and a reported dispute over two deaths among them), heavier verifier searches, and a writer first draft 60% over target that needed twelve trim rounds, the draft-then-cut pattern the writer prompt was written to remove. No agent was killed; the stop rule held. The stop-rule clause had no observable effect on this run, and the judge line changed no verdict on the v1.2 report.
 
 **On the deposit-and-brokerage question,** the C1 line did what it was written for at the extraction step: the insurer's institutional-status sentence, the earlier run's one miss, was registered from the insurer's own page as a supporting claim. The writer then left it unused (a single-source supporting claim about an entity's status, which neither the question nor the outline's coverage table names), so the miss moved from the researcher to the writer; a one-sentence coverage pass added it but could not close the item, because the other body's status sentence, present on six fetched pages, was never registered. A second new miss, the per-beneficiary rate behind a coverage ceiling, sits on the same brochure as nine registered claims. Cost fell 8%.
 
-**Across the two paired questions v1.3 scores 1.00 and 0.84 against v1.2's 0.929 and 0.92 re-judged the same way: mean 0.92 against 0.925, one win and one loss, cost +19% and −8%.** v1.3 is not shown better than v1.2 at n=2. What the pair does show: the extraction line reaches the sentence it targets on some pages (one of two here, four of five offline), run-to-run variance in which adjacent sentences get registered is larger than the line's effect, and a supporting claim about an entity's status is not something the writer reaches for unprompted, which is the next lever (`decisions/backlog.md`, W3).
+**On the HTTP-caching question (third pair, 2026-09-15),** the two runs tie: the same score and the same failed item, a normative rule in one section of the main RFC that the question's rubric treats as essential, which no researcher registered on either run although the page was fetched by four angles and carried its cap of central claims. The extraction line written for that kind of sentence did not produce it on its fourth attempt at this page (two offline arms and two live runs). The v1.3 run recorded three source disagreements against the earlier run's two (a browser vendor's own telemetry figures changing between 2023 and 2025; a browser engine's page-cache history), and its round-2 angle registered the RFC's live errata list, which brought an erratum against the missed section within one sentence of the rule; a coverage pass adding that sentence did not close the item. Cost +4%; the writer's first draft was again 60% over target.
+
+**Across the three paired questions v1.3 scores 1.00, 0.84 and 0.923 against v1.2's 0.929, 0.92 and 0.923 re-judged the same way: mean 0.921 against 0.924, one win, one loss, one tie, cost +19%, −8% and +4%.** v1.3 is not shown better than v1.2 at n=3, and not worse; it stays the current version (progress #69, #71). What the pair does show: the extraction line reaches the sentence it targets on some pages (one of two here, four of five offline), run-to-run variance in which adjacent sentences get registered is larger than the line's effect, and a supporting claim about an entity's status is not something the writer reaches for unprompted, which is the next lever (`decisions/backlog.md`, W3).
 
 ## Experiment after the pilot: a gap hunter for the adjacent-passage class (2026-09-11)
 
