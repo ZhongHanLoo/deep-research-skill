@@ -1,0 +1,48 @@
+{
+  "skill": "deep-research",
+  "skill_version": "1.3.0",
+  "question": "What does current evidence say about the health effects of moderate coffee consumption in adults?",
+  "slug": "coffee-health",
+  "preset": "quick",
+  "mode": "report",
+  "started": "2026-09-15T17:41:24Z",
+  "finished": "2026-09-15T18:06:30Z",
+  "wall_clock_s": 1506,
+  "harness": "claude-code",
+  "model": "claude-sonnet-5",
+  "agents": 5,
+  "rounds": 1,
+  "execution": "parallel",
+  "tokens": 599614,
+  "sources": {
+    "total": 20,
+    "ok": 20,
+    "unfetchable": 0,
+    "possibly_fabricated": 0,
+    "skipped_robots": 0,
+    "by_method": {
+      "jina-reader": 10,
+      "raw-http": 8,
+      "wayback": 2
+    }
+  },
+  "claims": {
+    "total": 30,
+    "by_label": {
+      "corroborated": 9,
+      "single-source": 21
+    },
+    "by_importance": {
+      "central": 10,
+      "supporting": 19,
+      "tangential": 1
+    },
+    "quote_verified": 30,
+    "quote_failed": 0,
+    "quote_unknown": 0
+  },
+  "health": {
+    "ARCHIVED-ONLY": 2,
+    "LIVE": 18
+  }
+}

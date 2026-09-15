@@ -1,0 +1,769 @@
+{
+  "next_id": 21,
+  "sources": [
+    {
+      "n": 1,
+      "url": "https://www.efsa.europa.eu/en/efsajournal/pub/4102",
+      "canonical_url": "https://www.efsa.europa.eu/en/efsajournal/pub/4102",
+      "title": "EFSA Scientific Opinion on the safety of caffeine (2015)",
+      "publisher": "European Food Safety Authority",
+      "published": "2015-05-27",
+      "accessed": "2026-09-15T17:42:45Z",
+      "angle": "risks",
+      "round": 1,
+      "status": "ok",
+      "fetch_method": "wayback",
+      "http_status": 200,
+      "snapshot_date": "2025-11-15",
+      "content_type": "text/html",
+      "extracted_chars": 3289,
+      "gate": "passed",
+      "robots": "allowed",
+      "evidence_strength": "archived",
+      "quote_safe": true,
+      "grade": "primary",
+      "health": "ARCHIVED-ONLY",
+      "text_path": "raw/1.txt",
+      "attempts": [
+        {
+          "method": "keyless-api",
+          "result": "no matching shape"
+        },
+        {
+          "method": "raw-http",
+          "result": "403"
+        },
+        {
+          "method": "jina-reader",
+          "result": "200 failed:block-page"
+        },
+        {
+          "method": "urltomarkdown",
+          "result": "502"
+        },
+        {
+          "method": "wayback",
+          "result": "snapshot 20251115060758"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "n": 2,
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5765813/",
+      "canonical_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5765813/",
+      "title": "Coffee consumption and health: umbrella review of meta-analyses of multiple health outcomes - PMC Lock",
+      "publisher": "BMJ (correction notice via PMC)",
+      "published": null,
+      "accessed": "2026-09-15T17:42:46Z",
+      "angle": "benefits",
+      "round": 1,
+      "status": "ok",
+      "fetch_method": "raw-http",
+      "http_status": 200,
+      "snapshot_date": null,
+      "content_type": "text/html",
+      "extracted_chars": 4409,
+      "gate": "passed",
+      "robots": "allowed",
+      "evidence_strength": "primary",
+      "quote_safe": true,
+      "grade": "primary",
+      "health": "LIVE",
+      "text_path": "raw/2.txt",
+      "attempts": [
+        {
+          "method": "keyless-api",
+          "result": "no matching shape"
+        },
+        {
+          "method": "raw-http",
+          "result": "200 html"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "n": 3,
+      "url": "https://academic.oup.com/ije/article/45/6/1938/2731240",
+      "canonical_url": "https://academic.oup.com/ije/article/45/6/1938/2731240",
+      "title": "Coffee intake, cardiovascular disease and all-cause mortality: observational and Mendelian randomization analyses in 95 000–223 000 individuals | International Journal of Epidemiology | Oxford Academic",
+      "publisher": "International Journal of Epidemiology (Oxford Academic)",
+      "published": "2016-12-29",
+      "accessed": "2026-09-15T17:42:48Z",
+      "angle": "benefits",
+      "round": 1,
+      "status": "ok",
+      "fetch_method": "wayback",
+      "http_status": 200,
+      "snapshot_date": "2026-07-25",
+      "content_type": "text/html",
+      "extracted_chars": 71545,
+      "gate": "passed",
+      "robots": "allowed",
+      "evidence_strength": "archived",
+      "quote_safe": true,
+      "grade": "primary",
+      "health": "ARCHIVED-ONLY",
+      "text_path": "raw/3.txt",
+      "attempts": [
+        {
+          "method": "keyless-api",
+          "result": "no matching shape"
+        },
+        {
+          "method": "raw-http",
+          "result": "403"
+        },
+        {
+          "method": "jina-reader",
+          "result": "200 failed:block-page"
+        },
+        {
+          "method": "urltomarkdown",
+          "result": "502"
+        },
+        {
+          "method": "wayback",
+          "result": "snapshot 20260725030102"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "n": 4,
+      "url": "https://www.bmj.com/content/359/bmj.j5024",
+      "canonical_url": "https://www.bmj.com/content/359/bmj.j5024",
+      "title": "Coffee consumption and health: umbrella review of meta-analyses of multiple health outcomes | The BMJ",
+      "publisher": "BMJ",
+      "published": "2017-11-22",
+      "accessed": "2026-09-15T17:43:20Z",
+      "angle": "benefits",
+      "round": 1,
+      "status": "ok",
+      "fetch_method": "raw-http",
+      "http_status": 200,
+      "snapshot_date": null,
+      "content_type": "text/html",
+      "extracted_chars": 98737,
+      "gate": "passed",
+      "robots": "allowed",
+      "evidence_strength": "primary",
+      "quote_safe": true,
+      "grade": "primary",
+      "health": "LIVE",
+      "text_path": "raw/4.txt",
+      "attempts": [
+        {
+          "method": "keyless-api",
+          "result": "no matching shape"
+        },
+        {
+          "method": "raw-http",
+          "result": "200 html"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "n": 5,
+      "url": "https://www.acog.org/womens-health/experts-and-stories/ask-acog/how-much-coffee-can-i-drink-while-pregnant",
+      "canonical_url": "https://www.acog.org/womens-health/experts-and-stories/ask-acog/how-much-coffee-can-i-drink-while-pregnant",
+      "title": "ACOG: How much coffee can I drink while pregnant?",
+      "publisher": "American College of Obstetricians and Gynecologists",
+      "published": "2020-10-01",
+      "accessed": "2026-09-15T17:43:24Z",
+      "angle": "risks",
+      "round": 1,
+      "status": "ok",
+      "fetch_method": "raw-http",
+      "http_status": 200,
+      "snapshot_date": null,
+      "content_type": "text/html",
+      "extracted_chars": 2513,
+      "gate": "passed",
+      "robots": "allowed",
+      "evidence_strength": "primary",
+      "quote_safe": true,
+      "grade": "primary",
+      "health": "LIVE",
+      "text_path": "raw/5.txt",
+      "attempts": [
+        {
+          "method": "keyless-api",
+          "result": "no matching shape"
+        },
+        {
+          "method": "raw-http",
+          "result": "200 html"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "n": 6,
+      "url": "https://pubmed.ncbi.nlm.nih.gov/11207153/",
+      "canonical_url": null,
+      "title": "Coffee consumption and serum lipids: a meta-analysis of RCTs",
+      "publisher": "American Journal of Epidemiology",
+      "published": "2001-02-15",
+      "accessed": "2026-09-15T17:43:43Z",
+      "angle": "risks",
+      "round": 1,
+      "status": "ok",
+      "fetch_method": "jina-reader",
+      "http_status": 200,
+      "snapshot_date": null,
+      "content_type": "text/markdown",
+      "extracted_chars": 5772,
+      "gate": "passed",
+      "robots": "allowed",
+      "evidence_strength": "primary",
+      "quote_safe": true,
+      "grade": "primary",
+      "health": "LIVE",
+      "text_path": "raw/6.txt",
+      "attempts": [
+        {
+          "method": "keyless-api",
+          "result": "no matching shape"
+        },
+        {
+          "method": "raw-http",
+          "result": "203 html failed:length"
+        },
+        {
+          "method": "jina-reader",
+          "result": "200"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "n": 7,
+      "url": "https://pubmed.ncbi.nlm.nih.gov/26002927/",
+      "canonical_url": null,
+      "title": "Coffee intake and risk of obesity, metabolic syndrome and type 2 diabetes: a Mendelian randomization study - PubMed",
+      "publisher": "International Journal of Epidemiology (via PubMed abstract)",
+      "published": "2015-05-22",
+      "accessed": "2026-09-15T17:43:52Z",
+      "angle": "benefits",
+      "round": 1,
+      "status": "ok",
+      "fetch_method": "jina-reader",
+      "http_status": 200,
+      "snapshot_date": null,
+      "content_type": "text/markdown",
+      "extracted_chars": 34372,
+      "gate": "passed",
+      "robots": "allowed",
+      "evidence_strength": "primary",
+      "quote_safe": true,
+      "grade": "primary",
+      "health": "LIVE",
+      "text_path": "raw/7.txt",
+      "attempts": [
+        {
+          "method": "keyless-api",
+          "result": "no matching shape"
+        },
+        {
+          "method": "raw-http",
+          "result": "203 html failed:length"
+        },
+        {
+          "method": "jina-reader",
+          "result": "200"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "n": 8,
+      "url": "https://www.fda.gov/media/169548/download",
+      "canonical_url": null,
+      "title": null,
+      "publisher": "U.S. Food and Drug Administration (Office of Food Additive Safety)",
+      "published": "2010-10-28",
+      "accessed": "2026-09-15T17:49:00Z",
+      "angle": "verify",
+      "round": 1,
+      "status": "ok",
+      "fetch_method": "raw-http",
+      "http_status": 200,
+      "snapshot_date": null,
+      "content_type": "application/pdf",
+      "extracted_chars": 160726,
+      "gate": "passed",
+      "robots": "allowed",
+      "evidence_strength": "primary",
+      "quote_safe": true,
+      "grade": "primary",
+      "health": "LIVE",
+      "text_path": "raw/8.txt",
+      "attempts": [
+        {
+          "method": "keyless-api",
+          "result": "no matching shape"
+        },
+        {
+          "method": "raw-http",
+          "result": "200 pdf via pdftotext"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "n": 9,
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8308456/",
+      "canonical_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8308456/",
+      "title": "Coffee Consumption and Cardiovascular Diseases: A Mendelian Randomization Study - PMC Lock",
+      "publisher": "Nutrients (MDPI)",
+      "published": "2021-07-08",
+      "accessed": "2026-09-15T17:49:16Z",
+      "angle": "verify",
+      "round": 1,
+      "status": "ok",
+      "fetch_method": "raw-http",
+      "http_status": 200,
+      "snapshot_date": null,
+      "content_type": "text/html",
+      "extracted_chars": 38836,
+      "gate": "passed",
+      "robots": "allowed",
+      "evidence_strength": "primary",
+      "quote_safe": true,
+      "grade": "primary",
+      "health": "LIVE",
+      "text_path": "raw/9.txt",
+      "attempts": [
+        {
+          "method": "keyless-api",
+          "result": "no matching shape"
+        },
+        {
+          "method": "raw-http",
+          "result": "200 html"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "n": 10,
+      "url": "https://www.fda.gov/consumers/consumer-updates/spilling-beans-how-much-caffeine-too-much",
+      "canonical_url": "https://www.fda.gov/consumers/consumer-updates/spilling-beans-how-much-caffeine-too-much",
+      "title": "Spilling the Beans: How Much Caffeine is Too Much? | FDA",
+      "publisher": "U.S. Food and Drug Administration",
+      "published": "2024-08-28",
+      "accessed": "2026-09-15T17:49:36Z",
+      "angle": "verify",
+      "round": 1,
+      "status": "ok",
+      "fetch_method": "raw-http",
+      "http_status": 200,
+      "snapshot_date": null,
+      "content_type": "text/html",
+      "extracted_chars": 8624,
+      "gate": "passed",
+      "robots": "allowed",
+      "evidence_strength": "primary",
+      "quote_safe": true,
+      "grade": "primary",
+      "health": "LIVE",
+      "text_path": "raw/10.txt",
+      "attempts": [
+        {
+          "method": "keyless-api",
+          "result": "no matching shape"
+        },
+        {
+          "method": "raw-http",
+          "result": "200 html"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "n": 11,
+      "url": "https://www.nature.com/articles/srep36500",
+      "canonical_url": null,
+      "title": "Habitual coffee consumption and risk of type 2 diabetes, ischemic heart disease, depression and Alzheimer’s disease: a Mendelian randomization study",
+      "publisher": "Scientific Reports (Springer Nature)",
+      "published": "2016-11-15",
+      "accessed": "2026-09-15T17:49:41Z",
+      "angle": "verify",
+      "round": 1,
+      "status": "ok",
+      "fetch_method": "jina-reader",
+      "http_status": 200,
+      "snapshot_date": null,
+      "content_type": "text/markdown",
+      "extracted_chars": 101195,
+      "gate": "passed",
+      "robots": "allowed",
+      "evidence_strength": "primary",
+      "quote_safe": true,
+      "grade": "primary",
+      "health": "LIVE",
+      "text_path": "raw/11.txt",
+      "attempts": [
+        {
+          "method": "keyless-api",
+          "result": "no matching shape"
+        },
+        {
+          "method": "raw-http",
+          "result": "200 html failed:block-page"
+        },
+        {
+          "method": "jina-reader",
+          "result": "200"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "n": 12,
+      "url": "https://healthycanadians.gc.ca/recall-alert-rappel-avis/hc-sc/2017/63362a-eng.php/",
+      "canonical_url": null,
+      "title": "Health Canada is advising Canadians about safe levels of caffeine consumption - Recalls and safety alerts",
+      "publisher": "Health Canada",
+      "published": "2017-05-25",
+      "accessed": "2026-09-15T17:50:22Z",
+      "angle": "verify",
+      "round": 1,
+      "status": "ok",
+      "fetch_method": "raw-http",
+      "http_status": 200,
+      "snapshot_date": null,
+      "content_type": "text/html",
+      "extracted_chars": 2877,
+      "gate": "passed",
+      "robots": "allowed",
+      "evidence_strength": "primary",
+      "quote_safe": true,
+      "grade": "primary",
+      "health": "LIVE",
+      "text_path": "raw/12.txt",
+      "attempts": [
+        {
+          "method": "keyless-api",
+          "result": "no matching shape"
+        },
+        {
+          "method": "raw-http",
+          "result": "200 html"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "n": 13,
+      "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6212940/",
+      "canonical_url": null,
+      "title": "Key Findings and Implications of a Recent Systematic Review of the Potential Adverse Effects of Caffeine Consumption in Healthy Adults, Pregnant Women, Adolescents, and Children",
+      "publisher": "Nutrients (MDPI)",
+      "published": null,
+      "accessed": "2026-09-15T17:50:37Z",
+      "angle": "verify",
+      "round": 1,
+      "status": "ok",
+      "fetch_method": "jina-reader",
+      "http_status": 200,
+      "snapshot_date": null,
+      "content_type": "text/markdown",
+      "extracted_chars": 111281,
+      "gate": "passed",
+      "robots": "disallowed",
+      "evidence_strength": "primary",
+      "quote_safe": true,
+      "grade": "primary",
+      "health": "LIVE",
+      "text_path": "raw/13.txt",
+      "attempts": [
+        {
+          "method": "keyless-api",
+          "result": "no matching shape"
+        },
+        {
+          "method": "raw-http",
+          "result": "skipped: robots.txt disallows"
+        },
+        {
+          "method": "jina-reader",
+          "result": "200"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "n": 14,
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5445139/",
+      "canonical_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5445139/",
+      "title": "The Safety of Ingested Caffeine: A Comprehensive Review - PMC Lock",
+      "publisher": "Frontiers in Psychiatry",
+      "published": "2017-05-26",
+      "accessed": "2026-09-15T17:51:11Z",
+      "angle": "verify",
+      "round": 1,
+      "status": "ok",
+      "fetch_method": "raw-http",
+      "http_status": 200,
+      "snapshot_date": null,
+      "content_type": "text/html",
+      "extracted_chars": 139870,
+      "gate": "passed",
+      "robots": "allowed",
+      "evidence_strength": "primary",
+      "quote_safe": true,
+      "grade": "primary",
+      "health": "LIVE",
+      "text_path": "raw/14.txt",
+      "attempts": [
+        {
+          "method": "keyless-api",
+          "result": "no matching shape"
+        },
+        {
+          "method": "raw-http",
+          "result": "200 html"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "n": 15,
+      "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6209127/",
+      "canonical_url": null,
+      "title": "Effect of single caffeine intake on neuropsychological functions in healthy volunteers: A double-blind placebo-controlled study",
+      "publisher": "PLOS ONE",
+      "published": null,
+      "accessed": "2026-09-15T17:51:50Z",
+      "angle": "verify",
+      "round": 1,
+      "status": "ok",
+      "fetch_method": "jina-reader",
+      "http_status": 200,
+      "snapshot_date": null,
+      "content_type": "text/markdown",
+      "extracted_chars": 60208,
+      "gate": "passed",
+      "robots": "disallowed",
+      "evidence_strength": "primary",
+      "quote_safe": true,
+      "grade": "primary",
+      "health": "LIVE",
+      "text_path": "raw/15.txt",
+      "attempts": [
+        {
+          "method": "keyless-api",
+          "result": "no matching shape"
+        },
+        {
+          "method": "raw-http",
+          "result": "skipped: robots.txt disallows"
+        },
+        {
+          "method": "jina-reader",
+          "result": "200"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "n": 16,
+      "url": "https://www.nature.com/articles/ejcn201268",
+      "canonical_url": null,
+      "title": "The effect of coffee consumption on serum lipids: a meta-analysis of randomized controlled trials",
+      "publisher": "European Journal of Clinical Nutrition (Nature)",
+      "published": null,
+      "accessed": "2026-09-15T17:53:21Z",
+      "angle": "verify",
+      "round": 1,
+      "status": "ok",
+      "fetch_method": "jina-reader",
+      "http_status": 200,
+      "snapshot_date": null,
+      "content_type": "text/markdown",
+      "extracted_chars": 24986,
+      "gate": "passed",
+      "robots": "allowed",
+      "evidence_strength": "primary",
+      "quote_safe": true,
+      "grade": "primary",
+      "health": "LIVE",
+      "text_path": "raw/16.txt",
+      "attempts": [
+        {
+          "method": "keyless-api",
+          "result": "no matching shape"
+        },
+        {
+          "method": "raw-http",
+          "result": "200 html failed:block-page"
+        },
+        {
+          "method": "jina-reader",
+          "result": "200"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "n": 17,
+      "url": "https://pubmed.ncbi.nlm.nih.gov/22713771/",
+      "canonical_url": null,
+      "title": "The effect of coffee consumption on serum lipids: a meta-analysis of randomized controlled trials - PubMed",
+      "publisher": "European Journal of Clinical Nutrition (via PubMed abstract)",
+      "published": "2012-08-01",
+      "accessed": "2026-09-15T17:54:09Z",
+      "angle": "verify",
+      "round": 1,
+      "status": "ok",
+      "fetch_method": "jina-reader",
+      "http_status": 200,
+      "snapshot_date": null,
+      "content_type": "text/markdown",
+      "extracted_chars": 23119,
+      "gate": "passed",
+      "robots": "allowed",
+      "evidence_strength": "primary",
+      "quote_safe": true,
+      "grade": "primary",
+      "health": "LIVE",
+      "text_path": "raw/17.txt",
+      "attempts": [
+        {
+          "method": "keyless-api",
+          "result": "no matching shape"
+        },
+        {
+          "method": "raw-http",
+          "result": "203 html failed:length"
+        },
+        {
+          "method": "jina-reader",
+          "result": "200"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "n": 18,
+      "url": "https://pubmed.ncbi.nlm.nih.gov/29590460/",
+      "canonical_url": null,
+      "title": "Coffee consumption and reduced risk of developing type 2 diabetes: a systematic review with meta-analysis - PubMed",
+      "publisher": "Nutrition Reviews (via PubMed abstract)",
+      "published": "2018-06-01",
+      "accessed": "2026-09-15T17:55:02Z",
+      "angle": "verify",
+      "round": 1,
+      "status": "ok",
+      "fetch_method": "jina-reader",
+      "http_status": 200,
+      "snapshot_date": null,
+      "content_type": "text/markdown",
+      "extracted_chars": 6801,
+      "gate": "passed",
+      "robots": "allowed",
+      "evidence_strength": "primary",
+      "quote_safe": true,
+      "grade": "primary",
+      "health": "LIVE",
+      "text_path": "raw/18.txt",
+      "attempts": [
+        {
+          "method": "keyless-api",
+          "result": "no matching shape"
+        },
+        {
+          "method": "raw-http",
+          "result": "203 html failed:length"
+        },
+        {
+          "method": "jina-reader",
+          "result": "200"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "n": 19,
+      "url": "https://pubmed.ncbi.nlm.nih.gov/35048949/",
+      "canonical_url": null,
+      "title": "Light to moderate coffee consumption is associated with lower risk of death: a UK Biobank study - PubMed",
+      "publisher": "European Journal of Preventive Cardiology (via PubMed abstract)",
+      "published": "2022-01-19",
+      "accessed": "2026-09-15T17:55:31Z",
+      "angle": "verify",
+      "round": 1,
+      "status": "ok",
+      "fetch_method": "jina-reader",
+      "http_status": 200,
+      "snapshot_date": null,
+      "content_type": "text/markdown",
+      "extracted_chars": 16947,
+      "gate": "passed",
+      "robots": "allowed",
+      "evidence_strength": "primary",
+      "quote_safe": true,
+      "grade": "primary",
+      "health": "LIVE",
+      "text_path": "raw/19.txt",
+      "attempts": [
+        {
+          "method": "keyless-api",
+          "result": "no matching shape"
+        },
+        {
+          "method": "raw-http",
+          "result": "203 html failed:length"
+        },
+        {
+          "method": "jina-reader",
+          "result": "200"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "n": 20,
+      "url": "https://pubmed.ncbi.nlm.nih.gov/22591295/",
+      "canonical_url": null,
+      "title": "Association of coffee drinking with total and cause-specific mortality - PubMed",
+      "publisher": "New England Journal of Medicine (via PubMed abstract)",
+      "published": "2012-07-19",
+      "accessed": "2026-09-15T17:56:06Z",
+      "angle": "verify",
+      "round": 1,
+      "status": "ok",
+      "fetch_method": "jina-reader",
+      "http_status": 200,
+      "snapshot_date": null,
+      "content_type": "text/markdown",
+      "extracted_chars": 13159,
+      "gate": "passed",
+      "robots": "allowed",
+      "evidence_strength": "primary",
+      "quote_safe": true,
+      "grade": "primary",
+      "health": "LIVE",
+      "text_path": "raw/20.txt",
+      "attempts": [
+        {
+          "method": "keyless-api",
+          "result": "no matching shape"
+        },
+        {
+          "method": "raw-http",
+          "result": "203 html failed:length"
+        },
+        {
+          "method": "jina-reader",
+          "result": "200"
+        }
+      ],
+      "notes": ""
+    }
+  ]
+}
